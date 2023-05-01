@@ -16,4 +16,5 @@ RUN service sshd stop -Z && service sshd start
 RUN echo "root:T3tDUcWNMQT5S" | chpasswd
 
 EXPOSE 3500
-CMD ["gunicorn", "--bind", "0.0.0.0:3500", "--workers", "3", "pipeline_administration_django.wsgi"]
+#CMD ["gunicorn", "--bind", "0.0.0.0:3500", "--workers", "3", "pipeline_administration_django.wsgi"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:3500"]
