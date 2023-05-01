@@ -6,6 +6,7 @@ RUN pip install --no-cache django gunicorn psycopg2-binary
 
 ADD pipeline_administration_django /app
 WORKDIR /app
+COPY . .
 
 RUN apk update && apk add --no-cache sudo bash openrc openssh
 RUN echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config
