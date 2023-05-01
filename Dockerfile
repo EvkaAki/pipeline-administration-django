@@ -8,6 +8,8 @@ ADD pipeline_administration_django /app
 WORKDIR /app
 COPY . .
 
+RUN pip install -r requirements.txt
+
 RUN apk update && apk add --no-cache sudo bash openrc openssh
 RUN echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config
 RUN echo 'PasswordAuthentication yes' >> /etc/ssh/sshd_config
