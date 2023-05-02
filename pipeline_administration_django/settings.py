@@ -54,10 +54,7 @@ MIDDLEWARE = [
      'corsheaders.middleware.CorsMiddleware',
 ]
 
-CORS_ORIGIN_ALLOW_ALL = False
-CORS_ORIGIN_WHITELIST = (
-  'http://dp.host.haus:3500',
-)
+CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'pipeline_administration_django.urls'
 
