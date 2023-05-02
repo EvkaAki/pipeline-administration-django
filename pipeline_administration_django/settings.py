@@ -58,7 +58,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHITELIST = (
   'http://dp.host.haus',
 )
-X_FRAME_OPTIONS = 'ALLOW-FROM http://dp.host.haus/'
+X_FRAME_OPTIONS = 'ALLOW-FROM http://dp.host.haus'
 
 
 ROOT_URLCONF = 'pipeline_administration_django.urls'
