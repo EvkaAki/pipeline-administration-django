@@ -1,4 +1,11 @@
 from django.db import models
 
-class RunRequest(models.Model):
-    pipeline_id = models.Int
+
+class Request(models.Model):
+    description = models.TextField()
+    state = models.IntegerField()
+    pipeline_id = models.UUIDField()
+    user_id = models.UUIDField()
+
+    def __str__(self):
+        return self.pipeline_id
