@@ -7,6 +7,13 @@
 
 <h1>Hello World</h1>
 <p>This is a paragraph.</p>
+{% for pipeline in pipelines %}
+<a href="#">
+    <h2>{{ pipeline.name }}</h2>
+</a>
+<span class="badge badge-primary">{{ pipeline.created_at }}</span>
+<hr>
+{% endfor %}
 
 </body>
 </html>
