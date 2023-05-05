@@ -1,20 +1,17 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>My app</title>
-</head>
-<body>
+{% extends 'base.html' %}
 
-<h1>Hello World</h1>
-<p>This is a paragraph.</p>
-{% for pipeline in pipelines %}
-<a href="#">
-    <h2>{{ pipeline.name }}</h2>
-</a>
-<span class="badge badge-primary">{{ pipeline.created_at }}</span>
-<hr>
-{% endfor %}
+{% block content %}
 
-</body>
-</html>
+    {% for pipeline in pipelines %}
+    <a href="#">
+        <h2>{{ pipeline.name }}</h2>
+    </a>
+    <span class="badge badge-primary">{{ pipeline.created_at }}</span>
+    <hr>
+    {% endfor %}
+<button class="mdc-button foo-button">
+  <span class="mdc-button__label">Button</span>
+</button>
+{% endblock %}
+
 
