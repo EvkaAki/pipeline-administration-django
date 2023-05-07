@@ -29,6 +29,9 @@ SECRET_KEY = 'django-insecure-o4c+gl@ll&falq9p2qw1ih9!808u(1(+-4w338$st37y3-kyln
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+DEV_MODE = os.getenv("DEV_MODE")
+PIPELINE_URL = os.getenv("PIPELINE_URL")
+
 ALLOWED_HOSTS = ["*"]
 
 
@@ -132,25 +135,24 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
-# STATIC_URL = 'static/'
-# STATICFILES_DIRS = [U_BASE_DIR / "static"]
-STATIC_ROOT = BASE_DIR / 'static'
+credentials = kfp.auth.ServiceAccountTokenVolumeCredentials(path=None)
+client = kfp.Client(host=PIPELINE_URL, credentials=credentials)
 
-# Static files (CSS, JavaScript, Images)                   
-# https://docs.djangoproject.com/en/4.2/howto/static-files/           
-#STATIC_URL = 'static/'                                                                                
-# STATICFILES_DIRS = [U_BASE_DIR / "static"]                                                           
-STATIC_ROOT = BASE_DIR / 'static'                                                                      
-                                                                                                       
-                                                                                                       
-credentials = kfp.auth.ServiceAccountTokenVolumeCredentials(path=None)                                 
-client = kfp.Client(host="http://ml-pipeline.kubeflow.svc.cluster.local:8888", credentials=credentials)
+# client = kfp.Client(host="http://ml-pipeline.kubeflow.svc.cluster.local:8888", credentials=credentials)
 namespace = client.get_user_namespace()
 
-STATIC_URL = '/run-requests/' + namespace + '/static/'
-STATIC_URL_LOCAL = '/static/'
+# STATIC_URL = '/run-requests/' + namespace + '/static/'
+STATIC_URL_LOCAL = 'static/'
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+
+
+# Optional, if you want to use a dedicated directory for your app's static files
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'pipeline_administration_django/static'),
+]
 
 
 # Default primary key field type

@@ -1,3 +1,4 @@
 pipeline_administration_django/.env
 .idea/
 node_modules/
+.env
