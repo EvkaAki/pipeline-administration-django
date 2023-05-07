@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "@material/theme": "^14.0.0",
+    "jquery": "^3.6.4",
     "material-components-web": "^14.0.0"
   }
 }

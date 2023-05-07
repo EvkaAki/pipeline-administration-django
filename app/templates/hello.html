@@ -1,17 +1,31 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="row">
+    <div class="col s4">
+        {% for pipeline in pipelines %}
+        <a href="#">
+            <h2>{{ pipeline.name }}</h2>
+        </a>
+        <span class="badge badge-primary">{{ pipeline.created_at }}</span>
+        <hr>
+        {% endfor %}
+    </div>
+    <div class="col s4">
 
-    {% for pipeline in pipelines %}
-    <a href="#">
-        <h2>{{ pipeline.name }}</h2>
-    </a>
-    <span class="badge badge-primary">{{ pipeline.created_at }}</span>
-    <hr>
-    {% endfor %}
-<button class="mdc-button foo-button">
-  <span class="mdc-button__label">Button</span>
-</button>
+  <div class="input-field col s12">
+    <select>
+      <option value="" disabled selected>Choose your option</option>
+      <option value="1">Option 1</option>
+      <option value="2">Option 2</option>
+      <option value="3">Option 3</option>
+    </select>
+    <label>Materialize Select</label>
+  </div>
+    </div>
+    <div class="col s4">3</div>
+</div>
+
 {% endblock %}
 
 

@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-o4c+gl@ll&falq9p2qw1ih9!808u(1(+-4w338$st37y3-kyln
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-DEV_MODE = os.getenv("DEV_MODE")
+DEV_MODE = os.environ.get("DEV_MODE")
 PIPELINE_URL = os.getenv("PIPELINE_URL")
 
 ALLOWED_HOSTS = ["*"]
@@ -144,12 +144,15 @@ namespace = client.get_user_namespace()
 # STATIC_URL = '/run-requests/' + namespace + '/static/'
 STATIC_URL_LOCAL = 'static/'
 
-STATIC_URL = '/static/'
+if DEV_MODE == 'True':
+    STATIC_URL = '/static/'
+else:
+    STATIC_URL = '/run-requests/' + namespace + '/static/'
+
+
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
-
-# Optional, if you want to use a dedicated directory for your app's static files
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'pipeline_administration_django/static'),
 ]
