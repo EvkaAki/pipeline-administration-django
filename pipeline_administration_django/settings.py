@@ -88,12 +88,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'pipeline_administration_django.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 env = environ.Env(
-    # set casting, default value
     DEBUG=(bool, True)
 )
 
@@ -102,10 +99,6 @@ environ.Env.read_env()
 DATABASES = {
     'default': env.db(),
 }
-
-
-# Password validation
-# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -122,10 +115,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/4.2/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -138,10 +127,8 @@ USE_TZ = True
 credentials = kfp.auth.ServiceAccountTokenVolumeCredentials(path=None)
 client = kfp.Client(host=PIPELINE_URL, credentials=credentials)
 
-# client = kfp.Client(host="http://ml-pipeline.kubeflow.svc.cluster.local:8888", credentials=credentials)
 namespace = client.get_user_namespace()
 
-# STATIC_URL = '/run-requests/' + namespace + '/static/'
 STATIC_URL_LOCAL = 'static/'
 
 if DEV_MODE == 'True':
@@ -157,8 +144,5 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'pipeline_administration_django/static'),
 ]
 
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

@@ -4,6 +4,7 @@
     <title>Run Requests</title>
     {% load static %}
     <link href="{% static 'materialize/css/materialize.min.css' %}" rel="stylesheet">
+    <link href="{% static 'custom.css' %}" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 </head>
 <body>
@@ -20,6 +21,7 @@
     <script>
         $(document).ready(function () {
             $('select').formSelect();
+            $('.tabs').tabs();
         });
     </script>
 </footer>
