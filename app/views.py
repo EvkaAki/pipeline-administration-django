@@ -8,7 +8,7 @@ def researcher_view(request):
     client = kfp.Client(host=os.environ.get("PIPELINE_URL"), credentials=credentials)
     namespace = client.get_user_namespace()
     if namespace == 'admin':
-        return redirect("admin", foo="bar")
+        return redirect("/run-requests/admin/administrator")
     pipelines = client.list_pipelines()
     dev_mode = os.environ.get("DEV_MODE")
     print('here')
@@ -17,4 +17,8 @@ def researcher_view(request):
 
 
 def admin_view(request):
-    return render(request, 'hello.html', {})
+    credentials = kfp.auth.ServiceAccountTokenVolumeCredentials(path=None)
+    client = kfp.Client(host=os.environ.get("PIPELINE_URL"), credentials=credentials)
+    namespace = client.get_user_namespace()
+
+    return render(request, 'admin.html', {})
