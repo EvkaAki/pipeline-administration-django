@@ -14,10 +14,10 @@ def get_client():
 
 
 def researcher_view(request):
-    # print(request.POST)
     errors = ''
-    client = get_client()
     r = requests.get(url='http://dp.host.haus/api/workgroup/env-info')
+
+    client = get_client()
 
     namespace = client.get_user_namespace()
     if namespace == 'admin':
@@ -40,30 +40,12 @@ def researcher_view(request):
 
 
 def admin_view(request):
-    client = get_client()
-    namespace = client.get_user_namespace()
+    bombom = get_client()
+    haha = bombom.get_user_namespace()
 
     run_requests = RunRequest.objects.all()
+    return render(request, 'admin.html', {'haha': haha, 'run_requests': run_requests})
 
-    return render(request, 'admin.html', {'run_requests': run_requests})
 
-
-def add_run_request(request):
-    client = get_client()
-    pipelines = client.list_pipelines()
-
-    if request.method == 'POST':
-        run_request_form = AddRunRequestForm(request.POST)
-        print('aaa')
-        if run_request_form.is_valid():
-            print('aaa')
-            run_request = run_request_form.save(commit=False)
-            run_request.user_id = 'eed9e625-1d4c-483a-dd8f-2d6b58e0a3ed'
-            run_request.state = 0
-            run_request.save()
-
-            # return redirect('/run-requests/admin/administrator')
-    else:
-        run_request_form = AddRunRequestForm()
-
-    return render(request, 'add_run_request.html', {'form': run_request_form, 'pipelines': pipelines.pipelines})
+def approve_run_request(request_id):
+    run_request = request_id

@@ -21,15 +21,19 @@
                 <th>Pipeline</th>
                 <th>Author</th>
                 <th>Status</th>
+                <th>Created At</th>
                 <th>Actions</th>
             </tr>
             </thead>
             <tbody>
             {% for run_request in run_requests %}
             <tr>
-                <td>Jonathan</td>
-                <td>Lollipop</td>
-                <td>$7.00</td>
+                <td>
+                        {{ haha }}
+                </td>
+                <td>{{ run_request.user_id }}</td>
+                <td>{{ run_request.state }}</td>
+                <td>{{ run_request.created_at }}</td>
                 <td>
                     <a href="#" class="tiny waves-effect waves-light btn-small">
                         <i class="material-icons">details</i>
