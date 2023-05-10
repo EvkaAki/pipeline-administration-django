@@ -3,8 +3,9 @@ from django.urls import path
 from django.conf.urls import include
 from django.conf import settings
 from django.conf.urls.static import static
+from app.views import add_run_request
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("app.urls")),
-] + static(settings.STATIC_URL_LOCAL, document_root=settings.STATIC_ROOT)
+    ] + static(settings.STATIC_URL_LOCAL, document_root=settings.STATIC_ROOT)

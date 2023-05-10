@@ -2,7 +2,7 @@ from django.db import models
 
 
 class RunRequest(models.Model):
-    description = models.TextField()
+    message = models.TextField()
     state = models.IntegerField()
     pipeline_id = models.UUIDField()
     dataset_id = models.UUIDField()
@@ -14,8 +14,8 @@ class RunRequest(models.Model):
         return self.pipeline_id
 
 
-# class Notifications(models.Model):
-#     message = models.TextField()
+class Notifications(models.Model):
+    message = models.TextField()
     # description = models.TextField()
     # state = models.IntegerField()
     # pipeline_id = models.UUIDField()

@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import RunRequest
+from .forms import AddRunRequestForm
 import kfp
 import os
 
@@ -22,3 +23,18 @@ def admin_view(request):
     run_requests = RunRequest.objects.all()
 
     return render(request, 'admin.html', {'run_requests': run_requests})
+
+
+def add_run_request(request):
+    if request.method == 'POST':
+        form = AddRunRequestForm(request.POST)
+        if form.is_valid():
+            run_request = form.save(commit=False)
+            run_request.user_id = 'a'
+            run_request.state = 'b'
+
+            return redirect('/run-requests/admin/administrator')
+    else:
+        form = AddRunRequestForm()
+
+    return render(request, 'add_run_request.html', {'form': form})
