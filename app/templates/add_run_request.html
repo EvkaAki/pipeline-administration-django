@@ -1,10 +1,39 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-{% endblock %}
 <form method="POST" action=".">
-                {% csrf_token %}
-    {% form.as_p %}
-    <button type="button" class="waves-effect waves-light btn">Submit</button>
+     {% csrf_token %}
+    <div class="input-field col s8">
+        <select name="pipeline_id" id="id_pipeline_id">
+            <option value="" disabled selected>Choose your pipeline</option>
+            {% for pipeline in pipelines %}
+            <option value="{{ pipeline.id }}" selected>{{ pipeline.name }}</option>
+            {% endfor %}
+        </select>
+        <label for="id_pipeline_id">Kubeflow Pipeline</label>
+    </div>
+    <div class="input-field col s8">
+        <select name="dataset_id" id="id_dataset_id">
+            <option value="" disabled selected>Choose requested dataset</option>
+            <option value="83d9e625-1d4c-489a-ac8f-2d6b58e0a3ed" selected>Breast cancer data</option>
+        </select>
+        <label for="id_dataset_id">Requested dataset</label>
+    </div>
+    <div class="input-field col s8">
+        <textarea name="message" id="message" class="materialize-textarea"></textarea>
+        <label for="message">Request message</label>
+    </div>
+    <div class="input-field col s8">
+        <button class="waves-effect waves-light btn">Submit</button>
+    </div>
+
 </form>
+
+    {% if forms.errors %}
+        {% for error in forms.errors %}
+            <div class="red">
+                {{ error }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

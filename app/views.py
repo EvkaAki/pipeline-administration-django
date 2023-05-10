@@ -1,40 +1,55 @@
 from django.shortcuts import render, redirect
 from .models import RunRequest
 from .forms import AddRunRequestForm
+from kubernetes import client, config
 import kfp
+import requests
 import os
 
 
-def researcher_view(request):
+def get_client():
     credentials = kfp.auth.ServiceAccountTokenVolumeCredentials()
-    client = kfp.Client(host=os.environ.get("PIPELINE_URL"), credentials=credentials)
+
+    return kfp.Client(host=os.environ.get("PIPELINE_URL"), credentials=credentials)
+
+
+def researcher_view(request):
+    client = get_client()
+    r = requests.get(url='http://dp.host.haus/api/workgroup/env-info')
+
     namespace = client.get_user_namespace()
     if namespace == 'admin':
         return redirect("/run-requests/admin/administrator")
     pipelines = client.list_pipelines()
 
-    return render(request, 'researcher.html', {'pipelines': pipelines.pipelines})
+    return render(request, 'researcher.html', {'pipelines': pipelines.pipelines, 'r': r})
 
 
 def admin_view(request):
-    credentials = kfp.auth.ServiceAccountTokenVolumeCredentials(path=None)
-    client = kfp.Client(host=os.environ.get("PIPELINE_URL"), credentials=credentials)
+    client = get_client()
     namespace = client.get_user_namespace()
+
     run_requests = RunRequest.objects.all()
 
     return render(request, 'admin.html', {'run_requests': run_requests})
 
 
 def add_run_request(request):
+    client = get_client()
+    pipelines = client.list_pipelines()
+
     if request.method == 'POST':
-        form = AddRunRequestForm(request.POST)
-        if form.is_valid():
-            run_request = form.save(commit=False)
-            run_request.user_id = 'a'
-            run_request.state = 'b'
+        run_request_form = AddRunRequestForm(request.POST)
+        print('aaa')
+        if run_request_form.is_valid():
+            print('aaa')
+            run_request = run_request_form.save(commit=False)
+            run_request.user_id = 'eed9e625-1d4c-483a-dd8f-2d6b58e0a3ed'
+            run_request.state = 0
+            run_request.save()
 
-            return redirect('/run-requests/admin/administrator')
+            # return redirect('/run-requests/admin/administrator')
     else:
-        form = AddRunRequestForm()
+        run_request_form = AddRunRequestForm()
 
-    return render(request, 'add_run_request.html', {'form': form})
+    return render(request, 'add_run_request.html', {'form': run_request_form, 'pipelines': pipelines.pipelines})
