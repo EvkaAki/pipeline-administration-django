@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import RunRequest
+from app.models import RunRequest
 
 
 admin.site.register(RunRequest)
