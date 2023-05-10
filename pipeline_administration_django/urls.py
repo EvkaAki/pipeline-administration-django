@@ -4,8 +4,6 @@ from django.conf.urls import include
 from django.conf import settings
 from django.conf.urls.static import static
 
-admin.autodiscover()
-
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("app.urls")),

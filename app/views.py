@@ -5,7 +5,7 @@ import os
 
 
 def researcher_view(request):
-    credentials = kfp.auth.ServiceAccountTokenVolumeCredentials(path=os.environ.get("KF_PIPELINES_SA_TOKEN_PATH"))
+    credentials = kfp.auth.ServiceAccountTokenVolumeCredentials()
     client = kfp.Client(host=os.environ.get("PIPELINE_URL"), credentials=credentials)
     namespace = client.get_user_namespace()
     if namespace == 'admin':
