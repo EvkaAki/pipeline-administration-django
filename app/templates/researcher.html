@@ -15,10 +15,11 @@
     </div>
     <div id="run_requests" class="col s12">
         <div class="row">
+            {{ errors }}
             <form method="POST" action=".">
                 {% csrf_token %}
                 <div class="input-field col s8">
-                    <select id="pipelineSelect">
+                    <select id="pipelineSelect" name="pipeline_id">
                         <option value="" disabled selected>Choose your pipeline</option>
                         {% for pipeline in pipelines %}
                         <option value="{{ pipeline.id }}" selected>{{ pipeline.name }}</option>
@@ -27,18 +28,18 @@
                     <label for="pipelineSelect">Kubeflow Pipeline</label>
                 </div>
                 <div class="input-field col s8">
-                    <select id="datasetSelect">
+                    <select id="datasetSelect" name="dataset_id">
                         <option value="" disabled selected>Choose requested dataset</option>
-                        <option value="1" selected>Breast cancer data</option>
+                        <option value="94b79680-cc10-496b-96b2-9c04424021d3" selected>Breast cancer data</option>
                     </select>
                     <label for="datasetSelect">Requested dataset</label>
                 </div>
                 <div class="input-field col s8">
-                    <textarea id="textarea1" class="materialize-textarea"></textarea>
+                    <textarea id="textarea1" name="message" class="materialize-textarea"></textarea>
                     <label for="textarea1">Textarea</label>
                 </div>
                 <div class="input-field col s8">
-                    <button type="button" class="waves-effect waves-light btn">Submit</button>
+                    <button type="submit" class="waves-effect waves-light btn">Submit</button>
                 </div>
             </form>
         </div>
@@ -46,7 +47,7 @@
     <div id="db_requests" class="col s12">
         <div class="row">
             <div class="input-field col s8">
-                <select id="dataset2Select">
+                <select id="dataset2Select" name="dataset_id">
                     <option value="" disabled selected>Choose requested dataset</option>
                     <option value="1" selected>Breast cancer data</option>
                     <option value="1" selected>Colon cancer data</option>
@@ -54,7 +55,7 @@
                 <label for="dataset2Select">Requested dataset</label>
             </div>
             <div class="input-field col s8">
-                <textarea id="textarea2" class="materialize-textarea"></textarea>
+                <textarea name="message" id="textarea2" class="materialize-textarea"></textarea>
                 <label for="textarea2">Textarea</label>
             </div>
             <div class="input-field col s8">
