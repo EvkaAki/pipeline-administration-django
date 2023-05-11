@@ -2,7 +2,7 @@ from django.shortcuts import render
 import requests
 import app.views
 from django.shortcuts import render, redirect
-from app.views import AddRunRequestForm
+from app.forms import AddRunRequestForm
 
 
 def researcher_view(request):

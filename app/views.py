@@ -1,10 +1,8 @@
-from .models import RunRequest
-from .forms import AddRunRequestForm
+from django.shortcuts import redirect
 from django.http import JsonResponse
 from kubernetes import client, config
 import kfp
 import requests
-import json
 import os
 
 
@@ -12,6 +10,15 @@ def get_client():
     credentials = kfp.auth.ServiceAccountTokenVolumeCredentials()
 
     return kfp.Client(host=os.environ.get("PIPELINE_URL"), credentials=credentials)
+
+
+def get_view():
+    kfp_client = get_client()
+    namespace = kfp_client.get_user_namespace()
+    if namespace == 'admin':
+        return redirect('admin_requests')
+    else:
+        return redirect('researcher')
 
 
 def get_pipeline_versions(request):
