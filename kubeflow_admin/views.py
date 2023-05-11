@@ -16,7 +16,9 @@ def admin_view(request):
 
 
 def request_detail(request, id):
-    return render(request, 'admin_request_detail.html')
+    kfp_client = app.views.get_client()
+    namespace = kfp_client.get_user_namespace()
+    return render(request, 'admin_request_detail.html', {'namespace': namespace})
 
 
 def approve_run_request(request_id):
