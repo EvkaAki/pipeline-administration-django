@@ -12,7 +12,7 @@ def get_client():
     return kfp.Client(host=os.environ.get("PIPELINE_URL"), credentials=credentials)
 
 
-def get_view():
+def get_view(request):
     kfp_client = get_client()
     namespace = kfp_client.get_user_namespace()
     if namespace == 'admin':
