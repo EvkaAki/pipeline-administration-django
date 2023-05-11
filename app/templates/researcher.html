@@ -97,7 +97,26 @@
 
 <script>
     $('#pipelineSelect').on('change', function () {
-        alert(this.value);
+        let pipeline_id = this.value
+        let namespace = 'researcher-nedeliakova'
+        $.ajax({
+            url: "/get-pipeline-versions",
+            data: {pipeline_id: pipeline_id},
+            dataType: "json",
+            success: function (res) {
+                console.log('success')
+
+                let versions = res.responseText;
+                $.each(versions, function (index) {
+                    console.log(index)
+                    $('#pipelineVersionSelect').append(
+                    '<option value="' + index + '">' + versions[index] + '</option>');
+                });
+                $('#pipelineVersionSelect').change()
+
+            }
+        });
+
     });
 </script>
 

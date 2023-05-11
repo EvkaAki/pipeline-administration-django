@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from kubernetes import client, config
 import kfp
 import requests
+import json
 import os
 
 
@@ -54,7 +55,12 @@ def admin_view(request):
 def get_pipeline_versions(request):
     kfp_client = get_client()
     pipeline_versions = kfp_client.list_pipeline_versions(pipeline_id=request.GET.get('pipeline_id'))
-    return JsonResponse(pipeline_versions.versions)
+
+    versions = {}
+    for version in pipeline_versions.versions:
+        versions[version.id] = version.name
+
+    return JsonResponse(versions)
 
 
 def approve_run_request(request_id):
