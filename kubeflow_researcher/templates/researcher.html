@@ -16,7 +16,7 @@
     </div>
     <div id="run_requests" class="col s12">
         <div class="row">
-            <form method="POST" action=".">
+            <form method="POST" action="requests">
                 {% csrf_token %}
                 <input type="hidden" name="pipeline_name">
                 <input type="hidden" name="pipeline_version_name">

@@ -7,13 +7,12 @@ from app.forms import AddRunRequestForm
 
 def researcher_view(request):
     errors = ''
-    r = requests.get(url='http://dp.host.haus/api/workgroup/env-info')
-
     client = app.views.get_client()
 
     namespace = client.get_user_namespace()
     if namespace == 'admin':
         return redirect("/run-requests/admin/administrator/requests")
+
     pipelines = client.list_pipelines()
 
     if request.method == 'POST':

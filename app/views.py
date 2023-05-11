@@ -1,5 +1,4 @@
 from django.shortcuts import redirect
-from django.http import JsonResponse
 from kubernetes import client, config
 import kfp
 import requests
