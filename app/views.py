@@ -15,10 +15,24 @@ def get_client():
     return kfp.Client(host=os.environ.get("PIPELINE_URL"), credentials=credentials)
 
 
+def get_kubeflow_user(request):
+    authservice_session = request.COOKIES.get('authservice_session')
+    cookies = {'authservice_session': authservice_session}
+    response = requests.get(url='http://dp.host.haus/api/workgroup/env-info', cookies=cookies)
+
+    if response.status_code == 200:
+        try:
+            return response.json()
+        except ValueError:
+            print('Decoding JSON has failed')
+    else:
+        print(f'Request failed with status code {response.status_code}')
+
+    return {}
+
+
 def researcher_view(request):
     errors = ''
-    r = requests.get(url='http://dp.host.haus/api/workgroup/env-info')
-
     client = get_client()
 
     namespace = client.get_user_namespace()
@@ -31,9 +45,10 @@ def researcher_view(request):
         # print('parsing form', run_request_form.is_valid())
         # print(run_request_form.errors)
         if run_request_form.is_valid():
+            user_data = get_kubeflow_user(request)
             run_request = run_request_form.save(commit=False)
             run_request.user_id = 'eed9e625-1d4c-483a-dd8f-2d6b58e0a3ed'
-            run_request.user_email = 'evanedeliakova@gmail.com'
+            run_request.user_email = user_data.get('user', 'evanedeliakova2@gmail.com')
             run_request.pipeline_name = 'tmp'
             run_request.pipeline_version_name = 'tmp'
             run_request.state = 0
