@@ -3,6 +3,7 @@
 {% block content %}
 
 <div class="row pipeline_researcher">
+    <div id="namespace" data-namespace="{{ namespace }}"></div>
     <div class="col s12">
         <ul class="tabs">
             <li class="tab col s4 teal-text text-lighten-2">
@@ -15,7 +16,6 @@
     </div>
     <div id="run_requests" class="col s12">
         <div class="row">
-            {{ errors }}
             <form method="POST" action=".">
                 {% csrf_token %}
                 <input type="hidden" name="pipeline_name">
@@ -28,23 +28,27 @@
                         {% endfor %}
                     </select>
                     <label for="pipelineSelect">Kubeflow Pipeline</label>
+                    <span class="orange-text">{{ errors.pipeline_id }}</span>
                 </div>
                 <div class="input-field col s8">
-                    <select id="pipelineVersionSelect" name="pipeline_id">
+                    <select id="pipelineVersionSelect" name="pipeline_version_id">
                         <option value="" disabled selected>Choose pipeline version</option>
                     </select>
                     <label for="pipelineVersionSelect">Kubeflow Pipeline Version</label>
                 </div>
                 <div class="input-field col s8">
+                    <span class="orange-text">{{ errors.dataset_id }}</span>
                     <select id="datasetSelect" name="dataset_id">
                         <option value="" disabled selected>Choose requested dataset</option>
                         <option value="94b79680-cc10-496b-96b2-9c04424021d3" selected>Breast cancer data</option>
                     </select>
                     <label for="datasetSelect">Requested dataset</label>
+                    <span class="orange-text">{{ errors.pipeline_version_id }}</span>
                 </div>
                 <div class="input-field col s8">
-                    <textarea id="textarea1" name="message" class="materialize-textarea"></textarea>
-                    <label for="textarea1">Textarea</label>
+                    <textarea id="message" name="message" class="materialize-textarea"></textarea>
+                    <label for="message">Textarea</label>
+                    <span class="orange-text">{{ errors.message }}</span>
                 </div>
                 <div class="input-field col s8">
                     <button type="submit" class="waves-effect waves-light btn">Submit</button>
@@ -98,21 +102,29 @@
 <script>
     $('#pipelineSelect').on('change', function () {
         let pipeline_id = this.value
-        let namespace = 'researcher-nedeliakova'
+        let namespace = $('#namespace').data('namespace')
+        let url
+        let pipelineVersionSelect = $('#pipelineVersionSelect');
+
+        if (namespace) {
+            url = "run-requests/" + namespace + "/get-pipeline-versions"
+        } else {
+            url = "/get-pipeline-versions"
+        }
+        pipelineVersionSelect.find('option').remove().end().append('<option value="" disabled>Choose pipeline version</option>').val('')
         $.ajax({
-            url: "/get-pipeline-versions",
+            url: url,
             data: {pipeline_id: pipeline_id},
             dataType: "json",
-            success: function (res) {
-                console.log('success')
+            success: function (response) {
 
-                let versions = res.responseText;
-                $.each(versions, function (index) {
-                    console.log(index)
-                    $('#pipelineVersionSelect').append(
-                    '<option value="' + index + '">' + versions[index] + '</option>');
+                $.each(response, function (key, val) {
+                    pipelineVersionSelect.append(new Option(val, key));
+
                 });
-                $('#pipelineVersionSelect').change()
+
+                pipelineVersionSelect.change()
+                pipelineVersionSelect.formSelect();
 
             }
         });
