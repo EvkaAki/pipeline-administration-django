@@ -19,9 +19,10 @@ def researcher_view(request):
     if request.method == 'POST':
         run_request_form = AddRunRequestForm(request.POST)
         if run_request_form.is_valid():
+            user_data = app.views.get_kubeflow_user(request)
             run_request = run_request_form.save(commit=False)
             run_request.user_id = 'eed9e625-1d4c-483a-dd8f-2d6b58e0a3ed'
-            run_request.user_email = 'evanedeliakova@gmail.com'
+            run_request.user_email = user_data.get('user', 'anonymous@gmail.com')
             run_request.pipeline_name = 'tmp'
             run_request.pipeline_version_name = 'tmp'
             run_request.state = 0

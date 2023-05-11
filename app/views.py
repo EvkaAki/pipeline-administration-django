@@ -24,3 +24,19 @@ def get_pipeline_versions(request):
 
     return JsonResponse(versions)
 
+
+def get_kubeflow_user(request):
+    auth_service_session = request.COOKIES.get('authservice_session')
+    cookies = {'authservice_session': auth_service_session}
+    response = requests.get(url='http://dp.host.haus/api/workgroup/env-info', cookies=cookies)
+
+    if response.status_code == 200:
+        try:
+            return response.json()
+        except ValueError:
+            print('Decoding JSON has failed')
+    else:
+        print(f'Request failed with status code {response.status_code}')
+
+    return {}
+
