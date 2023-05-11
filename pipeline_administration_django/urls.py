@@ -8,4 +8,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("app.urls")),
     path("", include("kubeflow_admin.urls")),
+    path("", include("kubeflow_researcher.urls")),
     ] + static(settings.STATIC_URL_LOCAL, document_root=settings.STATIC_ROOT)

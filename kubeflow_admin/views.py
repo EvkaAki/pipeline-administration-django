@@ -1,17 +1,12 @@
 from django.shortcuts import render
+
+import app.views
 from app.models import RunRequest
 import os
-import kfp
-
-
-def get_client():
-    credentials = kfp.auth.ServiceAccountTokenVolumeCredentials()
-
-    return kfp.Client(host=os.environ.get("PIPELINE_URL"), credentials=credentials)
 
 
 def admin_view(request):
-    kfp_client = get_client()
+    kfp_client = app.views.get_client()
     namespace = kfp_client.get_user_namespace()
     if os.environ.get("DEV_MODE") == 'True':
         namespace = 'researcher-nedeliakova'

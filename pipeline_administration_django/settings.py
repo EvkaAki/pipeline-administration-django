@@ -27,6 +27,7 @@ ALLOWED_HOSTS = ["*"]
 INSTALLED_APPS = [
     'app',
     'kubeflow_admin',
+    'kubeflow_researcher',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
