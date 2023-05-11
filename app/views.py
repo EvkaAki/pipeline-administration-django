@@ -16,9 +16,9 @@ def get_view(request):
     kfp_client = get_client()
     namespace = kfp_client.get_user_namespace()
     if namespace == 'admin':
-        return redirect('researcher')
-    else:
         return redirect('administrator/requests')
+    else:
+        return redirect('researcher/requests')
 
 
 def get_pipeline_versions(request):
