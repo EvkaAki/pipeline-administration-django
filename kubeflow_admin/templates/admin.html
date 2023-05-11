@@ -19,6 +19,7 @@
             <thead>
             <tr>
                 <th>Pipeline</th>
+                <th>Dataset</th>
                 <th>Author</th>
                 <th>Status</th>
                 <th>Created At</th>
@@ -34,22 +35,17 @@
                     </a>
                 </td>
                 <td>
-                    {{ run_request.pipeline_version_name }}
+                    {{ run_request.dataset_id }}
                 </td>
                 <td>{{ run_request.user_id }}</td>
                 <td>{{ run_request.state }}</td>
                 <td>{{ run_request.created_at }}</td>
                 <td>
-                    <a href="#" class="tiny waves-effect waves-light btn-small">
+                    <a href="requests/{{ run_request.id }}" data-position="bottom"
+                       data-tooltip="Open Run Request Detail"
+                       class="tooltipped tiny waves-effect waves-light btn-small">
                         <i class="material-icons">details</i>
                     </a>
-                    <a href="#" class="tiny waves-effect waves-light light-green btn-small">
-                        <i class="material-icons">check</i>
-                    </a>
-                    <a href="#" class="tiny waves-effect waves-light red btn-small">
-                        <i class="material-icons">clear</i>
-                    </a>
-
                 </td>
             </tr>
             {% endfor %}

@@ -23,7 +23,7 @@ def researcher_view(request):
 
     namespace = client.get_user_namespace()
     if namespace == 'admin':
-        return redirect("/run-requests/admin/administrator")
+        return redirect("/run-requests/admin/administrator/requests")
     pipelines = client.list_pipelines()
 
     if request.method == 'POST':
@@ -45,16 +45,6 @@ def researcher_view(request):
                   {'pipelines': pipelines.pipelines, 'errors': errors, 'namespace': namespace})
 
 
-def admin_view(request):
-    kfp_client = get_client()
-    namespace = kfp_client.get_user_namespace()
-    if os.environ.get("DEV_MODE") == 'True':
-        namespace = 'researcher-nedeliakova'
-    run_requests = RunRequest.objects.all()
-
-    return render(request, 'admin.html', {'namespace': str(namespace), 'run_requests': run_requests})
-
-
 def get_pipeline_versions(request):
     kfp_client = get_client()
     pipeline_versions = kfp_client.list_pipeline_versions(pipeline_id=request.GET.get('pipeline_id'))
@@ -65,6 +55,3 @@ def get_pipeline_versions(request):
 
     return JsonResponse(versions)
 
-
-def approve_run_request(request_id):
-    run_request = request_id

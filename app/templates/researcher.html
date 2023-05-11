@@ -109,7 +109,7 @@
         pipelineVersionSelect.find('option').remove().end().append('<option value="" disabled>Choose pipeline version</option>').val('')
         $.ajax({
             url: 'get-pipeline-versions',
-            data: {pipeline_id: pipeline_id},
+            data: { pipeline_id: pipeline_id },
             dataType: "json",
             success: function (response) {
 
