@@ -103,6 +103,7 @@
     $('#pipelineSelect').on('change', function () {
         let pipeline_id = this.value
         let namespace = $('#namespace').data('namespace')
+        console.log(namespace)
         let url
         let pipelineVersionSelect = $('#pipelineVersionSelect');
 

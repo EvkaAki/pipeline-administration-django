@@ -41,7 +41,8 @@ def researcher_view(request):
         else:
             errors = run_request_form.errors
 
-    return render(request, 'researcher.html', {'pipelines': pipelines.pipelines, 'errors': errors})
+    return render(request, 'researcher.html',
+                  {'pipelines': pipelines.pipelines, 'errors': errors, 'namespace': namespace})
 
 
 def admin_view(request):
