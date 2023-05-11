@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.http import JsonResponse
 import requests
 import app.views
 from django.shortcuts import render, redirect
@@ -32,3 +32,13 @@ def researcher_view(request):
 
     return render(request, 'researcher.html',
                   {'pipelines': pipelines.pipelines, 'errors': errors, 'namespace': namespace})
+
+
+def get_pipeline_versions_to_ajax(request):
+    pipeline_versions = app.views.get_pipeline_versions_by_id(request)
+
+    versions = {}
+    for version in pipeline_versions.versions:
+        versions[version.id] = version.name
+
+    return JsonResponse(versions)

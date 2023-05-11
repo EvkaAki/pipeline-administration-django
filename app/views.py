@@ -21,15 +21,10 @@ def get_view(request):
         return redirect('researcher/requests')
 
 
-def get_pipeline_versions(request):
+def get_pipeline_versions_by_id(request):
     kfp_client = get_client()
-    pipeline_versions = kfp_client.list_pipeline_versions(pipeline_id=request.GET.get('pipeline_id'))
 
-    versions = {}
-    for version in pipeline_versions.versions:
-        versions[version.id] = version.name
-
-    return JsonResponse(versions)
+    return kfp_client.list_pipeline_versions(pipeline_id=request.GET.get('pipeline_id'))
 
 
 def get_kubeflow_user(request):
