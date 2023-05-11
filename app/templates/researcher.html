@@ -108,9 +108,9 @@
         let pipelineVersionSelect = $('#pipelineVersionSelect');
 
         if (namespace) {
-            url = "run-requests/" + namespace + "/get-pipeline-versions"
+            url = "get-pipeline-versions"
         } else {
-            url = "/get-pipeline-versions"
+            url = "get-pipeline-versions"
         }
         pipelineVersionSelect.find('option').remove().end().append('<option value="" disabled>Choose pipeline version</option>').val('')
         $.ajax({
