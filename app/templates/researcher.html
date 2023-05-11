@@ -18,14 +18,22 @@
             {{ errors }}
             <form method="POST" action=".">
                 {% csrf_token %}
+                <input type="hidden" name="pipeline_name">
+                <input type="hidden" name="pipeline_version_name">
                 <div class="input-field col s8">
                     <select id="pipelineSelect" name="pipeline_id">
                         <option value="" disabled selected>Choose your pipeline</option>
                         {% for pipeline in pipelines %}
-                        <option value="{{ pipeline.id }}" selected>{{ pipeline.name }}</option>
+                        <option value="{{ pipeline.id }}">{{ pipeline.name }}</option>
                         {% endfor %}
                     </select>
                     <label for="pipelineSelect">Kubeflow Pipeline</label>
+                </div>
+                <div class="input-field col s8">
+                    <select id="pipelineVersionSelect" name="pipeline_id">
+                        <option value="" disabled selected>Choose pipeline version</option>
+                    </select>
+                    <label for="pipelineVersionSelect">Kubeflow Pipeline Version</label>
                 </div>
                 <div class="input-field col s8">
                     <select id="datasetSelect" name="dataset_id">
@@ -84,4 +92,14 @@
 
 {% endblock %}
 
+
+{% block scripts %}
+
+<script>
+    $('#pipelineSelect').on('change', function () {
+        alert(this.value);
+    });
+</script>
+
+{% endblock %}
 

@@ -5,8 +5,12 @@ class RunRequest(models.Model):
     message = models.TextField()
     state = models.IntegerField()
     pipeline_id = models.UUIDField()
+    pipeline_version_id = models.UUIDField()
+    pipeline_version_name = models.TextField()
+    pipeline_name = models.TextField()
     dataset_id = models.UUIDField()
     user_id = models.UUIDField()
+    user_email = models.EmailField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
 

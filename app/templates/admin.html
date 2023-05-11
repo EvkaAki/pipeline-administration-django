@@ -29,7 +29,12 @@
             {% for run_request in run_requests %}
             <tr>
                 <td>
-                        {{ haha }}
+                    <a href="{{ '/_/pipeline/?ns=' }}{{ namespace}}{{ '#/pipelines/details/' }}{{ run_request.pipeline_id }}">
+                        {{ run_request.pipeline_name }}
+                    </a>
+                </td>
+                <td>
+                    {{ run_request.pipeline_version_name }}
                 </td>
                 <td>{{ run_request.user_id }}</td>
                 <td>{{ run_request.state }}</td>
@@ -60,5 +65,6 @@
 </div>
 
 {% endblock %}
+
 
 

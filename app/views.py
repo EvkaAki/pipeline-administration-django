@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import RunRequest
 from .forms import AddRunRequestForm
+from django.http import JsonResponse
 from kubernetes import client, config
 import kfp
 import requests
@@ -31,20 +32,29 @@ def researcher_view(request):
         if run_request_form.is_valid():
             run_request = run_request_form.save(commit=False)
             run_request.user_id = 'eed9e625-1d4c-483a-dd8f-2d6b58e0a3ed'
+            run_request.user_email = 'evanedeliakova@gmail.com'
             run_request.state = 0
             run_request.save()
         else:
             errors = run_request_form.errors
 
-    return render(request, 'researcher.html', {'pipelines': pipelines.pipelines, 'r': r, 'errors': errors})
+    return render(request, 'researcher.html', {'pipelines': pipelines.pipelines, 'errors': errors})
 
 
 def admin_view(request):
-    bombom = get_client()
-    haha = bombom.get_user_namespace()
-
+    kfp_client = get_client()
+    namespace = kfp_client.get_user_namespace()
+    if os.environ.get("DEV_MODE") == 'True':
+        namespace = 'researcher-nedeliakova'
     run_requests = RunRequest.objects.all()
-    return render(request, 'admin.html', {'haha': haha, 'run_requests': run_requests})
+
+    return render(request, 'admin.html', {'namespace': str(namespace), 'run_requests': run_requests})
+
+
+def get_pipeline_versions(request):
+    kfp_client = get_client()
+    pipeline_versions = kfp_client.list_pipeline_versions(pipeline_id=request.GET.get('pipeline_id'))
+    return JsonResponse(pipeline_versions.versions)
 
 
 def approve_run_request(request_id):
