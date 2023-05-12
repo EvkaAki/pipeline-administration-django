@@ -26,6 +26,44 @@
             <div class="col s6 teal-text">Pipeline version</div>
             <div class="col s6">{{ run_request.pipeline_version_name }}</div>
         </div>
+        <div class="row">
+            <div class="col s6 teal-text">Requested dataset</div>
+            <div class="col s6">{{ run_request.dataset_id }}</div>
+        </div>
+        <div class="row">
+            <div class="col s6 teal-text">Requester message</div>
+            <div class="col s6">{{ run_request.message }}</div>
+        </div>
+        <div class="row">
+            <div class="col s12">
+                <form method="POST">
+                    <div class="input-field">
+                        <textarea id="message" name="message" class="materialize-textarea"></textarea>
+                        <label for="message">Note</label>
+                        <span class="orange-text">{{ errors.message }}</span>
+                    </div>
+                    {% for parameter in parameters %}
+                    <div class="input-field">
+                        <input id="{{ parameter.name }}" name="{{ parameter.name }}" class="materialize-textarea">
+                        <label for="{{ parameter.name }}">{{ parameter.name }}</label>
+                    </div>
+                    {% endfor %}
+                </form>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col s12">
+                <a href="requests/{{ run_request.id }}"
+                   class="green waves-effect waves-light btn-small">
+                    <i class="material-icons left">directions_run</i> Approve and create Run
+                </a>
+                <a href="requests/{{ run_request.id }}"
+                   class="red waves-effect waves-light btn-small">
+                    <i class="material-icons left">do_not_disturb</i> Deny
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 

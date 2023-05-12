@@ -3,6 +3,7 @@ from django.shortcuts import render
 import app.views
 from app.models import RunRequest
 import os
+import json
 
 
 def admin_view(request):
@@ -26,7 +27,8 @@ def request_detail(request, request_id):
     return render(request, 'admin_request_detail.html',
                   {'namespace': namespace,
                    'run_request': run_request,
-                   'pipeline': pipeline})
+                   'pipeline': pipeline,
+                   'parameters': pipeline.parameters})
 
 
 def approve_run_request(request_id):
