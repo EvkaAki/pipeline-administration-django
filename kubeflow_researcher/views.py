@@ -14,6 +14,8 @@ def researcher_view(request):
         return redirect("/run-requests/admin/administrator/requests")
 
     pipelines = client.list_pipelines()
+    datasets_available = app.views.fetch_available_datasets(app.views.get_token_from_request(request))
+    datasets_requestable = datasets = app.views.fetch_requestable_datasets(app.views.get_token_from_request(request))
 
     if request.method == 'POST':
         run_request_form = AddRunRequestForm(request.POST)
@@ -27,7 +29,8 @@ def researcher_view(request):
             errors = run_request_form.errors
 
     return render(request, 'researcher.html',
-                  {'pipelines': pipelines.pipelines, 'errors': errors, 'namespace': namespace})
+                  {'pipelines': pipelines.pipelines, 'errors': errors, 'namespace': namespace,
+                   'datasets_available': datasets_available, 'datasets_requestable': datasets_requestable})
 
 
 def get_pipeline_versions_to_ajax(request):

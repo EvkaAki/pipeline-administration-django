@@ -137,3 +137,9 @@ STATICFILES_DIRS = [
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+if DEV_MODE == 'True':
+    DATAPROVIDER_API_ENDPOINT = 'http://localhost:8081'
+else:
+    DATAPROVIDER_API_ENDPOINT = 'http://data-provider-service.kubeflow.svc.cluster.local:5000'
