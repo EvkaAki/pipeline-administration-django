@@ -15,10 +15,11 @@ def admin_view(request):
     return render(request, 'admin.html', {'namespace': str(namespace), 'run_requests': run_requests})
 
 
-def request_detail(request, id):
+def request_detail(request, request_id):
+    run_request = RunRequest.objects.get(pk=request_id)
     kfp_client = app.views.get_client()
     namespace = kfp_client.get_user_namespace()
-    return render(request, 'admin_request_detail.html', {'namespace': namespace})
+    return render(request, 'admin_request_detail.html', {'namespace': namespace, 'run_request': run_request})
 
 
 def approve_run_request(request_id):
