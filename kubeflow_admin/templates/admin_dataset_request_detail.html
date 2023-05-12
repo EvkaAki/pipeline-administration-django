@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+	<div class="row pipeline_researcher">
+		<div class="col s12">
+			<nav>
+				<div class="nav-wrapper">
+					<div class="col s12">
+						<a href="/run-requests/{{ namespace }}administrator/requests" class="breadcrumb">Admin Home</a>
+						<a href="#" class="breadcrumb">Dataset Request detail
+							{{ dataset_request.id }}
+						</a>
+					</div>
+				</div>
+			</nav>
+		</div>
+		<div class="col s12">
+			{% if messages and messages.message %}
+				<div class="row">
+					<div class="col s12">{{ messages.message }}</div>
+				</div>
+			{% endif %}
+			<div class="row">
+				<div class="col s6 teal-text">Status</div>
+				<div class="col s6">
+					{% if dataset_request.state == 0 %}
+						<span data-badge-caption=" " class="badge white-text light-blue">New</span>
+					{% elif dataset_request.state == 1 %}
+						<span data-badge-caption=" " class="badge white-text orange">Denied</span>
+					{% elif dataset_request.state == 2 %}
+						<span data-badge-caption=" " class="badge white-text green">Approved</span>
+					{% endif %}
+				</div>
+			</div>
+			<div class="row">
+				<div class="col s6 teal-text">Requester</div>
+				<div class="col s6">{{ dataset_request.user_email }}</div>
+			</div>
+			<div class="row">
+				<div class="col s6 teal-text">Requested dataset</div>
+				<div class="col s6">{{ dataset_request.dataset_id }}</div>
+			</div>
+			<div class="row">
+				<div class="col s6 teal-text">Requester message</div>
+				<div class="col s6">{{ dataset_request.message }}</div>
+			</div>
+			{% if dataset_request.response_comment %}
+				<div class="row">
+					<div class="col s6 teal-text">Response Comment</div>
+					<div class="col s6">{{ dataset_request.response_comment }}</div>
+				</div>
+			{% endif %}
+
+			{% if dataset_request.state == 0 %}
+				<div class="row">
+					<div class="col s12">
+						<form method="POST">
+							{% csrf_token %}
+							<div class="input-field">
+								<textarea id="message" name="response_comment" class="materialize-textarea"></textarea>
+								<label for="message">Response Comment</label>
+								<span class="orange-text">{{ errors.message }}</span>
+							</div>
+							<div class="input-field">
+							</div>
+							<button type="submit"
+							        name="decision"
+							        value="2"
+							        class="green waves-effect waves-light btn-small">
+								<i class="material-icons left">directions_run</i> Approve
+							</button>
+							<button type="submit"
+							        name="decision"
+							        value="1"
+							        class="red waves-effect waves-light btn-small">
+								<i class="material-icons left">do_not_disturb</i> Reject
+							</button>
+						</form>
+					</div>
+
+				</div>
+			{% endif %}
+		</div>
+	</div>
+
+{% endblock %}

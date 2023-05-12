@@ -27,6 +27,7 @@
         <div class="row">
             <form method="POST" action="requests">
                 {% csrf_token %}
+	            <input type="hidden" name="form_id" value="add_run_requests">
                 <input type="hidden" name="pipeline_name">
                 <input type="hidden" name="pipeline_version_name">
                 <div class="input-field col s8">
@@ -70,7 +71,10 @@
     </div>
     <div id="db_requests" class="col s12">
         <div class="row">
-            <div class="input-field col s8">
+            <form method="POST" action="requests">
+            	{% csrf_token %}
+	            <input type="hidden" name="form_id" value="add_dataset_request">
+	            <div class="input-field col s8">
                 <select id="dataset2Select" name="dataset_id">
                     <option value="" disabled selected>Choose requested dataset</option>
 	                {% for dataset in datasets_requestable %}
@@ -81,13 +85,14 @@
                 </select>
                 <label for="dataset2Select">Requested dataset</label>
             </div>
-            <div class="input-field col s8">
+                <div class="input-field col s8">
                 <textarea name="message" id="textarea2" class="materialize-textarea"></textarea>
                 <label for="textarea2">Textarea</label>
             </div>
-            <div class="input-field col s8">
-                <a class="waves-effect waves-light btn">Submit</a>
-            </div>
+                <div class="input-field col s8">
+	                <button type="submit" class="waves-effect waves-light btn">Submit</button>
+                </div>
+            </form>
         </div>
     </div>
     <div id="data_samples" class="col s12">

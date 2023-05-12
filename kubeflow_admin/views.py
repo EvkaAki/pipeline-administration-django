@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
 import app.views
-from app.models import RunRequest
+from app.models import RunRequest, DatasetRequest
 import os
 import json
 from django.utils import timezone
@@ -13,8 +13,27 @@ def admin_view(request):
     if os.environ.get("DEV_MODE") == 'True':
         namespace = 'researcher-nedeliakova'
     run_requests = RunRequest.objects.all()
+    dataset_requests = DatasetRequest.objects.all()
 
-    return render(request, 'admin.html', {'namespace': str(namespace), 'run_requests': run_requests})
+    return render(request, 'admin.html',
+                  {'namespace': str(namespace), 'run_requests': run_requests, 'dataset_requests': dataset_requests})
+
+
+def dataset_request_detail(request, request_id):
+    messages = {'message': ''}
+    dataset_request = DatasetRequest.objects.get(pk=request_id)
+    if request.method == 'POST':
+        decision = request.POST.get('decision')
+        if decision == "2":
+            token = app.views.get_token_from_request(request)
+            messages = app.views.dataset_grant_access(token, dataset_request.dataset_id, dataset_request.user_email)
+            # print(messages)
+        dataset_request.state = int(decision)
+        dataset_request.response_comment = request.POST.get('response_comment')
+        dataset_request.save()
+
+    return render(request, 'admin_dataset_request_detail.html',
+                  {'dataset_request': dataset_request, 'messages': messages})
 
 
 def request_detail(request, request_id):

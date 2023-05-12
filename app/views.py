@@ -74,3 +74,15 @@ def fetch_requestable_datasets(token):
         return datasets
     else:
         return None
+
+
+def dataset_grant_access(token, dataset_id, user_id):
+    url = DATAPROVIDER_API_ENDPOINT + "/access/grant"
+    headers = {'Content-Type': 'application/json'}
+    data = {'token': token, 'dataset_id': str(dataset_id), 'user_id': user_id}
+    response = requests.post(url, headers=headers, data=json.dumps(data))
+    # print(response.status_code)
+    # print(response)
+    if response.status_code in [201, 400, 401]:
+        return response.json()
+    return {"message": "Something went wrong: " + str(response.status_code)}
