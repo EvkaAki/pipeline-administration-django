@@ -62,9 +62,36 @@
         </table>
     </div>
     <div id="db_requests" class="col s12">
-        <div class="row">
-
-        </div>
+	    <table>
+		    <thead>
+		    <tr>
+			    <th>Dataset</th>
+			    <th>Author</th>
+			    <th>Status</th>
+			    <th>Created At</th>
+			    <th>Actions</th>
+		    </tr>
+		    </thead>
+		    <tbody>
+		    {% for dataset_request in dataset_requests %}
+			    <tr>
+				    <td>
+					    {{ dataset_request.dataset_id }}
+				    </td>
+				    <td>{{ dataset_request.user_email }}</td>
+				    <td>{{ dataset_request.state }}</td>
+				    <td>{{ dataset_request.created_at }}</td>
+				    <td>
+					    <a href="dataset_requests/{{ dataset_request.id }}" data-position="bottom"
+					       data-tooltip="Open Dataset Request Detail"
+					       class="tooltipped tiny waves-effect waves-light btn-small">
+						    <i class="material-icons">details</i>
+					    </a>
+				    </td>
+			    </tr>
+		    {% endfor %}
+		    </tbody>
+	    </table>
     </div>
 
 </div>

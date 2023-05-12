@@ -27,3 +27,13 @@ class Notifications(models.Model):
 
     # def __str__(self):
     #     return self.pipeline_id
+
+
+class DatasetRequest(models.Model):
+    message = models.TextField()
+    response_comment = models.TextField(null=True, blank=True)
+    state = models.IntegerField()
+    dataset_id = models.UUIDField()
+    user_email = models.EmailField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
