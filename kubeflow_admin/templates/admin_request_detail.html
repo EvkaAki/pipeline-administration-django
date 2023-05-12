@@ -14,8 +14,18 @@
         </nav>
     </div>
     <div class="col s12">
-
-
+        <div class="row">
+            <div class="col s6 teal-text">Requester</div>
+            <div class="col s6">{{ run_request.user_email }}</div>
+        </div>
+        <div class="row">
+            <div class="col s6 teal-text">Pipeline to run</div>
+            <div class="col s6">{{ pipeline.name }}</div>
+        </div>
+        <div class="row">
+            <div class="col s6 teal-text">Pipeline version</div>
+            <div class="col s6">{{ run_request.pipeline_version_name }}</div>
+        </div>
     </div>
 </div>
 

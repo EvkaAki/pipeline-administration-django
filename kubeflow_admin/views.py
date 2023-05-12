@@ -16,10 +16,17 @@ def admin_view(request):
 
 
 def request_detail(request, request_id):
-    run_request = RunRequest.objects.get(pk=request_id)
     kfp_client = app.views.get_client()
+
+    run_request = RunRequest.objects.get(pk=request_id)
     namespace = kfp_client.get_user_namespace()
-    return render(request, 'admin_request_detail.html', {'namespace': namespace, 'run_request': run_request})
+
+    pipeline = kfp_client.get_pipeline(str(run_request.pipeline_id))
+
+    return render(request, 'admin_request_detail.html',
+                  {'namespace': namespace,
+                   'run_request': run_request,
+                   'pipeline': pipeline})
 
 
 def approve_run_request(request_id):

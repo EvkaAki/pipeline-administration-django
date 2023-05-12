@@ -111,13 +111,16 @@
 <script>
     $('#pipelineSelect').on('change', function () {
         let pipeline_id = this.value
-        let namespace = $('#namespace').data('namespace')
         let pipelineVersionSelect = $('#pipelineVersionSelect');
-
+        if (pipeline_id != '') {
+            let query = '#pipelineSelect>option[value=' + pipeline_id + ']';
+            let value = $(query).text()
+            $('input[name=pipeline_name]').val(value)
+        }
         pipelineVersionSelect.find('option').remove().end().append('<option value="" disabled>Choose pipeline version</option>').val('')
         $.ajax({
             url: 'get-pipeline-versions-to-ajax',
-            data: { pipeline_id: pipeline_id },
+            data: {pipeline_id: pipeline_id},
             dataType: "json",
             success: function (response) {
 
@@ -130,7 +133,15 @@
                 pipelineVersionSelect.formSelect();
             }
         });
+    });
 
+    $('#pipelineVersionSelect').on('change', function () {
+        let pipeline_version_id = this.value
+        if (pipeline_version_id != '') {
+            let query = '#pipelineVersionSelect>option[value=' + pipeline_version_id + ']';
+            let value = $(query).text()
+            $('input[name=pipeline_version_name]').val(value)
+        }
     });
 </script>
 
