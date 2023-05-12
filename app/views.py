@@ -3,6 +3,9 @@ from kubernetes import client, config
 import kfp
 import requests
 import os
+import json
+
+from pipeline_administration_django.settings import DATAPROVIDER_API_ENDPOINT
 
 
 def get_client():
@@ -26,8 +29,12 @@ def get_pipeline_versions_by_id(request):
     return kfp_client.list_pipeline_versions(pipeline_id=request.GET.get('pipeline_id'))
 
 
+def get_token_from_request(request):
+    return request.COOKIES.get('authservice_session')
+
+
 def get_kubeflow_user(request):
-    auth_service_session = request.COOKIES.get('authservice_session')
+    auth_service_session = get_token_from_request(request)
     cookies = {'authservice_session': auth_service_session}
     response = requests.get(url='http://dp.host.haus/api/workgroup/env-info', cookies=cookies)
 
@@ -41,3 +48,29 @@ def get_kubeflow_user(request):
 
     return {}
 
+
+def fetch_available_datasets(token):
+    # print(DATAPROVIDER_API_ENDPOINT)
+    url = DATAPROVIDER_API_ENDPOINT + "/user/dataset/available"
+    headers = {'Content-Type': 'application/json'}
+    data = {'token': token}
+    response = requests.get(url, headers=headers, data=json.dumps(data))
+
+    if response.status_code == 200:
+        datasets = response.json()
+        return datasets
+    else:
+        return None
+
+
+def fetch_requestable_datasets(token):
+    url = DATAPROVIDER_API_ENDPOINT + "/user/dataset/requestable"
+    headers = {'Content-Type': 'application/json'}
+    data = {'token': token}
+    response = requests.get(url, headers=headers, data=json.dumps(data))
+
+    if response.status_code == 200:
+        datasets = response.json()
+        return datasets
+    else:
+        return None

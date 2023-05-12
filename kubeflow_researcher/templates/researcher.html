@@ -49,7 +49,10 @@
                     <span class="orange-text">{{ errors.dataset_id }}</span>
                     <select id="datasetSelect" name="dataset_id">
                         <option value="" disabled selected>Choose requested dataset</option>
-                        <option value="94b79680-cc10-496b-96b2-9c04424021d3" selected>Breast cancer data</option>
+	                    {% for dataset in datasets_available %}
+		                    <option value="{{ dataset.uuid }}">{{ dataset.name }}</option>
+	                    {% endfor %}
+{#                        <option value="94b79680-cc10-496b-96b2-9c04424021d3" selected>Breast cancer data</option>#}
                     </select>
                     <label for="datasetSelect">Requested dataset</label>
                     <span class="orange-text">{{ errors.pipeline_version_id }}</span>
@@ -70,8 +73,11 @@
             <div class="input-field col s8">
                 <select id="dataset2Select" name="dataset_id">
                     <option value="" disabled selected>Choose requested dataset</option>
-                    <option value="1" selected>Breast cancer data</option>
-                    <option value="1" selected>Colon cancer data</option>
+	                {% for dataset in datasets_requestable %}
+		                <option value="{{ dataset.uuid }}">{{ dataset.name }}</option>
+	                {% endfor %}
+{#                    <option value="1" selected>Breast cancer data</option>#}
+{#                    <option value="1" selected>Colon cancer data</option>#}
                 </select>
                 <label for="dataset2Select">Requested dataset</label>
             </div>
