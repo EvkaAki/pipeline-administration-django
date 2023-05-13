@@ -93,76 +93,25 @@
                 </div>
             </form>
         </div>
-        <div id="my_requests" class="col s12">
-            <div class="row">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>Dataset</th>
-                        <th>Pipeline name</th>
-                        <th>Pipeline version</th>
-                        <th>Created At</th>
-                        <th>Updated At</th>
-                        <th>State At</th>
-                        <th>Artefact url</th>
-                    </tr>
-                    </thead>
-
-                    <tbody>
-                    {% for my_request in my_requests %}
-                        <tr>
-                            <td>{{ my_request.dataset_id }}</td>
-                            <td>{{ my_request.pipeline_name }}</td>
-                            <td>{{ my_request.pipeline_version_name }}</td>
-                            <td>{{ my_request.created_at }}</td>
-                            <td>{{ my_request.updated_at }}</td>
-                            <td>
-                                {% if my_request.state == 0 %}
-                                    <span data-badge-caption=" " class="badge white-text light-blue">New</span>
-                                {% elif my_request.state == 1 %}
-                                    <span data-badge-caption=" " class="badge white-text orange">Denied</span>
-                                {% elif my_request.state == 2 %}
-                                    <span data-badge-caption=" "
-                                          class="badge white-text green">Approved - processing</span>
-                                {% elif my_request.state == 3 %}
-                                    <span data-badge-caption=" " class="badge white-text teal">Completed</span>
-                                {% endif %}
-                            </td>
-                            <td>http://test</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-                <ul class="pagination">
-                    {% for index in pagination_range %}
-                        <li class="waves-effect
-                        {% if my_requests.number == index %}
-                            active
-                        {% endif %}
-                        "><a href="?page={{ index }}#my_requests">{{ index }}</a></li>
-                    {% endfor %}
-
-                </ul>
-            </div>
-        </div>
-        <div id="data_samples" class="col s12">
-            <div class="row">
-                <div class="col s12 m6">
-                    <div class="card blue-grey darken-1">
-                        <div class="card-content white-text">
-                            <span class="card-title">Card Title</span>
-                            <p>I am a very simple card. I am good at containing small bits of information.
-                                I am convenient because I require little markup to use effectively.</p>
-                        </div>
-                        <div class="card-action">
-                            <a href="#">This is a link</a>
-                            <a href="#">This is a link</a>
-                        </div>
+    </div>
+    <div id="data_samples" class="col s12">
+        <div class="row">
+            <div class="col s12 m6">
+                <div class="card blue-grey darken-1">
+                    <div class="card-content white-text">
+                        <span class="card-title">Card Title</span>
+                        <p>I am a very simple card. I am good at containing small bits of information.
+                            I am convenient because I require little markup to use effectively.</p>
+                    </div>
+                    <div class="card-action">
+                        <a href="#">This is a link</a>
+                        <a href="#">This is a link</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
 {% endblock %}
 
