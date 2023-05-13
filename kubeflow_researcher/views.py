@@ -1,7 +1,9 @@
 from django.http import JsonResponse
-import requests
+from app.models import RunRequest
 import app.views
 from django.shortcuts import render, redirect
+from app.forms import AddRunRequestForm
+from django.core.paginator import Paginator
 from app.forms import AddRunRequestForm, AddDatasetRequestForm
 
 
@@ -16,6 +18,12 @@ def researcher_view(request):
     pipelines = client.list_pipelines()
     datasets_available = app.views.fetch_available_datasets(app.views.get_token_from_request(request))
     datasets_requestable = app.views.fetch_requestable_datasets(app.views.get_token_from_request(request))
+    user_email_json = app.views.get_kubeflow_user(request)
+    user_email = user_email_json.get('user', 'anonymous@gmail.com')
+    my_requests = RunRequest.objects.filter(user_email=user_email).order_by('-updated_at')
+    paginator = Paginator(my_requests, 5)
+    page_number = request.GET.get("page")
+    my_requests = paginator.get_page(page_number)
 
     if request.method == 'POST':
         if request.POST.get('form_id') == 'add_run_request':
@@ -41,6 +49,12 @@ def add_run_request(request):
         errors = run_request_form.errors
     return errors
 
+    return render(request, 'researcher.html',
+                  {'pipelines': pipelines.pipelines,
+                   'errors': errors,
+                   'namespace': namespace,
+                   'my_requests': my_requests,
+                   'pagination_range': range(1, my_requests.paginator.num_pages + 1)})
 
 def add_dataset_request(request):
     errors = ''

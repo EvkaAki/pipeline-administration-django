@@ -1,3 +1,11 @@
 .pipeline_researcher > div {
     margin-top: 15px;
 }
+
+.app-wrapper {
+    margin: 20px;
+}
+
+#run_requests, #db_requests, #data_samples, #my_requests {
+    padding: 15px 30px;
+}

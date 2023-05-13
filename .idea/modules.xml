@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$USER_HOME$/Development/data-provider/.idea/data-provider.iml" filepath="$USER_HOME$/Development/data-provider/.idea/data-provider.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/pipeline_administration_django.iml" filepath="$PROJECT_DIR$/.idea/pipeline_administration_django.iml" />
     </modules>
   </component>

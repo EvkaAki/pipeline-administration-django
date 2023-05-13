@@ -21,6 +21,7 @@
     </content>
     <orderEntry type="jdk" jdkName="Python 3.9 (pipeline_administration_django)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="data-provider" />
   </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Django" />
