@@ -3,7 +3,7 @@ from django.shortcuts import render
 import app.views
 from app.models import RunRequest, DatasetRequest
 import os
-import json
+from django.core.paginator import Paginator
 from django.utils import timezone
 
 
@@ -15,8 +15,13 @@ def admin_view(request):
     run_requests = RunRequest.objects.all()
     dataset_requests = DatasetRequest.objects.all()
 
+    paginator = Paginator(run_requests, 5)
+    page_number = request.GET.get("page")
+    run_requests = paginator.get_page(page_number)
+
     return render(request, 'admin.html',
-                  {'namespace': str(namespace), 'run_requests': run_requests, 'dataset_requests': dataset_requests})
+                  {'namespace': str(namespace), 'run_requests': run_requests, 'dataset_requests': dataset_requests,
+                   'request_pagination_range':  range(1, run_requests.paginator.num_pages + 1)})
 
 
 def dataset_request_detail(request, request_id):
@@ -79,6 +84,7 @@ def request_detail(request, request_id):
     return render(request, 'admin_request_detail.html',
                   {'namespace': namespace,
                    'run_request': run_request,
+                   'request_pagination_range': range(1, ),
                    'pipeline': pipeline,
                    'parameters': pipeline.parameters,
                    'alert': alert})

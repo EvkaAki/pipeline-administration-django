@@ -33,7 +33,8 @@ def researcher_view(request):
 
     return render(request, 'researcher.html',
                   {'pipelines': pipelines.pipelines, 'errors': errors, 'namespace': namespace,
-                   'datasets_available': datasets_available, 'datasets_requestable': datasets_requestable})
+                   'datasets_available': datasets_available, 'datasets_requestable': datasets_requestable,
+                   'my_requests': my_requests, 'pagination_range': range(1, my_requests.paginator.num_pages + 1)})
 
 
 def add_run_request(request):
