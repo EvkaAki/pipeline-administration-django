@@ -51,9 +51,9 @@ MIDDLEWARE = [
 
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = (
-  'http://dp.host.haus',
+  'https://kubeflowthesis.com',
 )
-X_FRAME_OPTIONS = 'ALLOW-FROM http://dp.host.haus'
+X_FRAME_OPTIONS = 'ALLOW-FROM https://kubeflowthesis.com'
 
 
 ROOT_URLCONF = 'pipeline_administration_django.urls'
