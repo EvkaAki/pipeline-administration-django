@@ -2,209 +2,211 @@
 
 {% block content %}
 
-    <div class="row pipeline_researcher">
-        <div id="namespace" data-namespace="{{ namespace }}"></div>
-        <div class="col s12">
-            <nav>
-                <div class="nav-wrapper">
-                    <div class="col s12">
-                        <a href="#" class="breadcrumb">Researcher home</a>
-                    </div>
+<div class="row pipeline_researcher">
+    <div id="namespace" data-namespace="{{ namespace }}"></div>
+    <div class="col s12">
+        <nav>
+            <div class="nav-wrapper">
+                <div class="col s12">
+                    <a href="#" class="breadcrumb">Researcher home</a>
                 </div>
-            </nav>
-        </div>
-        <div class="col s12">
-            <ul class="tabs">
-                <li class="tab col s3 teal-text text-lighten-2">
-                    <a class="active" href="#run_requests">Pipeline Run Requests</a>
-                </li>
-                <li class="tab col s3"><a href="#db_requests">Request access to database</a></li>
-                <li class="tab col s3"><a href="#my_requests">My requests</a></li>
-                <li class="tab col s3"><a href="#data_samples">Data Samples</a></li>
-            </ul>
-        </div>
-        <div id="run_requests" class="col s12">
-            <div class="row">
-                <form method="POST" action="requests">
-                    {% csrf_token %}
-                    <input type="hidden" name="form_id" value="add_run_requests">
-                    <input type="hidden" name="pipeline_name">
-                    <input type="hidden" name="pipeline_version_name">
-                    <div class="input-field col s8">
-                        <select id="pipelineSelect" name="pipeline_id">
-                            <option value="" disabled selected>Choose your pipeline</option>
-                            {% for pipeline in pipelines %}
-                                <option value="{{ pipeline.id }}">{{ pipeline.name }}</option>
-                            {% endfor %}
-                        </select>
-                        <label for="pipelineSelect">Kubeflow Pipeline</label>
-                        <span class="orange-text">{{ errors.pipeline_id }}</span>
-                    </div>
-                    <div class="input-field col s8">
-                        <select id="pipelineVersionSelect" name="pipeline_version_id">
-                            <option value="" disabled selected>Choose pipeline version</option>
-                        </select>
-                        <label for="pipelineVersionSelect">Kubeflow Pipeline Version</label>
-                    </div>
-                    <div class="input-field col s8">
-                        <span class="orange-text">{{ errors.dataset_id }}</span>
-                        <select id="datasetSelect" name="dataset_id">
-                            <option value="" disabled selected>Choose requested dataset</option>
-                            {% for dataset in datasets_available %}
-                                <option value="{{ dataset.uuid }}">{{ dataset.name }}</option>
-                            {% endfor %}
-                            {#                        <option value="94b79680-cc10-496b-96b2-9c04424021d3" selected>Breast cancer data</option>#}
-                        </select>
-                        <label for="datasetSelect">Requested dataset</label>
-                        <span class="orange-text">{{ errors.pipeline_version_id }}</span>
-                    </div>
-                    <div class="input-field col s8">
-                        <textarea id="message" name="message" class="materialize-textarea"></textarea>
-                        <label for="message">Note</label>
-                        <span class="orange-text">{{ errors.message }}</span>
-                    </div>
-                    <div class="input-field col s8">
-                        <button type="submit" class="waves-effect waves-light btn">Submit</button>
-                    </div>
-                </form>
             </div>
+        </nav>
+    </div>
+    <div class="col s12">
+        <ul class="tabs">
+            <li class="tab col s3 teal-text text-lighten-2">
+                <a class="active" href="#run_requests">Pipeline Run Requests</a>
+            </li>
+            <li class="tab col s3"><a href="#db_requests">Request access to database</a></li>
+            <li class="tab col s3"><a href="#my_requests">My requests</a></li>
+            <li class="tab col s3"><a href="#data_samples">Data Samples</a></li>
+        </ul>
+    </div>
+    <div id="run_requests" class="col s12">
+        <div class="row">
+            <form method="POST" action="requests#run_requests">
+                {% csrf_token %}
+                <input type="hidden" name="form_id" value="add_run_request">
+                <input type="hidden" name="pipeline_name">
+                <input type="hidden" name="pipeline_version_name">
+                <div class="input-field col s8">
+                    <select id="pipelineSelect" name="pipeline_id">
+                        <option value="" disabled selected>Choose your pipeline</option>
+                        {% for pipeline in pipelines %}
+                        <option value="{{ pipeline.id }}">{{ pipeline.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="pipelineSelect">Kubeflow Pipeline</label>
+                    <span class="orange-text">{{ errors.run.pipeline_id }}</span>
+                </div>
+                <div class="input-field col s8">
+                    <select id="pipelineVersionSelect" name="pipeline_version_id">
+                        <option value="" disabled selected>Choose pipeline version</option>
+                    </select>
+                    <label for="pipelineVersionSelect">Kubeflow Pipeline Version</label>
+                    <span class="orange-text">{{ errors.run.pipeline_version_id }}</span>
+                </div>
+                <div class="input-field col s8">
+                    <span class="orange-text">{{ errors.run.dataset_id }}</span>
+                    <select id="datasetSelect" name="dataset_id">
+                        <option value="" disabled selected>Choose requested dataset</option>
+                        {% for dataset in datasets_available %}
+                        <option value="{{ dataset.uuid }}">{{ dataset.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="datasetSelect">Requested dataset</label>
+                    <span class="orange-text">{{ errors.run.pipeline_version_id }}</span>
+                </div>
+                <div class="input-field col s8">
+                    <textarea id="message" name="message" class="materialize-textarea"></textarea>
+                    <label for="message">Note</label>
+                    <span class="orange-text">{{ errors.run.message }}</span>
+                </div>
+                <div class="input-field col s8">
+                    <button type="submit" class="waves-effect waves-light btn">Submit</button>
+                </div>
+            </form>
         </div>
-        <div id="db_requests" class="col s12">
-            <div class="row">
-                <form method="POST" action="requests">
-                    {% csrf_token %}
-                    <input type="hidden" name="form_id" value="add_dataset_request">
-                    <div class="input-field col s8">
-                        <select id="dataset2Select" name="dataset_id">
-                            <option value="" disabled selected>Choose requested dataset</option>
-                            {% for dataset in datasets_requestable %}
-                                <option value="{{ dataset.uuid }}">{{ dataset.name }}</option>
-                            {% endfor %}
-                        </select>
-                        <label for="dataset2Select">Requested dataset</label>
-                    </div>
-                    <div class="input-field col s8">
-                        <textarea name="message" id="textarea2" class="materialize-textarea"></textarea>
-                        <label for="textarea2">Request message</label>
-                    </div>
-                    <div class="input-field col s8">
-                        <button type="submit" class="waves-effect waves-light btn">Submit</button>
-                    </div>
-                </form>
-            </div>
+    </div>
+    <div id="db_requests" class="col s12">
+        <div class="row">
+            <form method="POST" action="requests#db_requests">
+                {% csrf_token %}
+                <input type="hidden" name="form_id" value="add_dataset_request">
+                <div class="input-field col s8">
+                    <select id="dataset2Select" name="dataset_id">
+                        <option value="" disabled selected>Choose requested dataset</option>
+                        {% for dataset in datasets_requestable %}
+                        <option value="{{ dataset.uuid }}">{{ dataset.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="dataset2Select">Requested dataset</label>
+                    <span class="orange-text">{{ errors.dataset.dataset_id }}</span>
+                </div>
+                <div class="input-field col s8">
+                    <textarea name="message" id="textarea2" class="materialize-textarea"></textarea>
+                    <label for="textarea2">Request message</label>
+                    <span class="orange-text">{{ errors.dataset.message }}</span>
+                </div>
+                <div class="input-field col s8">
+                    <button type="submit" class="waves-effect waves-light btn">Submit</button>
+                </div>
+            </form>
         </div>
-        <div id="my_requests" class="col s12">
-            <div class="row">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>Dataset</th>
-                        <th>Pipeline name</th>
-                        <th>Pipeline version</th>
-                        <th>Created At</th>
-                        <th>Updated At</th>
-                        <th>State At</th>
-                        <th>Artefact url</th>
-                    </tr>
-                    </thead>
+    </div>
+    <div id="my_requests" class="col s12">
+        <div class="row">
+            <table>
+                <thead>
+                <tr>
+                    <th>Dataset</th>
+                    <th>Pipeline name</th>
+                    <th>Pipeline version</th>
+                    <th>Created At</th>
+                    <th>Updated At</th>
+                    <th>State At</th>
+                    <th>Artefact url</th>
+                </tr>
+                </thead>
 
-                    <tbody>
-                    {% for my_request in my_requests %}
-                        <tr>
-                            <td>{{ my_request.dataset_id }}</td>
-                            <td>{{ my_request.pipeline_name }}</td>
-                            <td>{{ my_request.pipeline_version_name }}</td>
-                            <td>{{ my_request.created_at }}</td>
-                            <td>{{ my_request.updated_at }}</td>
-                            <td>
-                                {% if my_request.state == 0 %}
-                                    <span data-badge-caption=" " class="badge white-text light-blue">New</span>
-                                {% elif my_request.state == 1 %}
-                                    <span data-badge-caption=" " class="badge white-text orange">Denied</span>
-                                {% elif my_request.state == 2 %}
-                                    <span data-badge-caption=" "
-                                          class="badge white-text green">Approved - processing</span>
-                                {% elif my_request.state == 3 %}
-                                    <span data-badge-caption=" " class="badge white-text teal">Completed</span>
-                                {% endif %}
-                            </td>
-                            <td>http://test</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-                <ul class="pagination">
-                    {% for index in pagination_range %}
-                        <li class="waves-effect
+                <tbody>
+                {% for my_request in my_requests %}
+                <tr>
+                    <td>{{ my_request.dataset_id }}</td>
+                    <td>{{ my_request.pipeline_name }}</td>
+                    <td>{{ my_request.pipeline_version_name }}</td>
+                    <td>{{ my_request.created_at }}</td>
+                    <td>{{ my_request.updated_at }}</td>
+                    <td>
+                        {% if my_request.state == 0 %}
+                        <span data-badge-caption=" " class="badge white-text light-blue">New</span>
+                        {% elif my_request.state == 1 %}
+                        <span data-badge-caption=" " class="badge white-text orange">Denied</span>
+                        {% elif my_request.state == 2 %}
+                        <span data-badge-caption=" "
+                              class="badge white-text green">Approved - processing</span>
+                        {% elif my_request.state == 3 %}
+                        <span data-badge-caption=" " class="badge white-text teal">Completed</span>
+                        {% endif %}
+                    </td>
+                    <td>http://test</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <ul class="pagination">
+                {% for index in pagination_range %}
+                <li class="waves-effect
                         {% if my_requests.number == index %}
                             active
                         {% endif %}
                         "><a href="?page={{ index }}#my_requests">{{ index }}</a></li>
-                    {% endfor %}
+                {% endfor %}
 
-                </ul>
-            </div>
+            </ul>
         </div>
-        <div id="data_samples" class="col s12">
-            <div class="row">
-                <div class="col s12 m6">
-                    {% for dataset in datasets_available %}
-                        <div class="card blue-grey darken-1">
-                            <div class="card-content white-text">
-                                <span class="card-title">{{ dataset.name }}</span>
-                                <p>ID: {{ dataset.uuid }}</p>
-                                <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
-                            </div>
-                            <div class="card-action">
-                                <a href="#">Download this sample</a>
-                            </div>
-                        </div>
-                    {% endfor %}
+    </div>
+    <div id="data_samples" class="col s12">
+        <div class="row">
+            <div class="col s12 m6">
+                {% for dataset in datasets_available %}
+                <div class="card blue-grey darken-1">
+                    <div class="card-content white-text">
+                        <span class="card-title">{{ dataset.name }}</span>
+                        <p>ID: {{ dataset.uuid }}</p>
+                        <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+                    </div>
+                    <div class="card-action">
+                        <a href="#">Download this sample</a>
+                    </div>
                 </div>
+                {% endfor %}
             </div>
         </div>
     </div>
+</div>
 
 {% endblock %}
 
 
 {% block scripts %}
-    <script>
-        $('#pipelineSelect').on('change', function () {
-            let pipeline_id = this.value
-            let pipelineVersionSelect = $('#pipelineVersionSelect');
-            if (pipeline_id != '') {
-                let query = '#pipelineSelect>option[value=' + pipeline_id + ']';
-                let value = $(query).text()
-                $('input[name=pipeline_name]').val(value)
-            }
-            pipelineVersionSelect.find('option').remove().end().append('<option value="" disabled>Choose pipeline version</option>').val('')
-            $.ajax({
-                url: 'get-pipeline-versions-to-ajax',
-                data: {pipeline_id: pipeline_id},
-                dataType: "json",
-                success: function (response) {
+<script>
+    $('#pipelineSelect').on('change', function () {
+        let pipeline_id = this.value
+        let pipelineVersionSelect = $('#pipelineVersionSelect');
+        if (pipeline_id != '') {
+            let query = '#pipelineSelect>option[value=' + pipeline_id + ']';
+            let value = $(query).text()
+            $('input[name=pipeline_name]').val(value)
+        }
+        pipelineVersionSelect.find('option').remove().end().append('<option value="" disabled>Choose pipeline version</option>').val('')
+        $.ajax({
+            url: 'get-pipeline-versions-to-ajax',
+            data: {pipeline_id: pipeline_id},
+            dataType: "json",
+            success: function (response) {
 
-                    $.each(response, function (key, val) {
-                        pipelineVersionSelect.append(new Option(val, key));
+                $.each(response, function (key, val) {
+                    pipelineVersionSelect.append(new Option(val, key));
 
-                    });
+                });
 
-                    pipelineVersionSelect.change()
-                    pipelineVersionSelect.formSelect();
-                }
-            });
-        });
-
-        $('#pipelineVersionSelect').on('change', function () {
-            let pipeline_version_id = this.value
-            if (pipeline_version_id != '') {
-                let query = '#pipelineVersionSelect>option[value=' + pipeline_version_id + ']';
-                let value = $(query).text()
-                $('input[name=pipeline_version_name]').val(value)
+                pipelineVersionSelect.change()
+                pipelineVersionSelect.formSelect();
             }
         });
-    </script>
+    });
+
+    $('#pipelineVersionSelect').on('change', function () {
+        let pipeline_version_id = this.value
+        if (pipeline_version_id != '') {
+            let query = '#pipelineVersionSelect>option[value=' + pipeline_version_id + ']';
+            let value = $(query).text()
+            $('input[name=pipeline_version_name]').val(value)
+        }
+    });
+</script>
 
 {% endblock %}
 

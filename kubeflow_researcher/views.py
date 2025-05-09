@@ -8,7 +8,8 @@ from app.forms import AddRunRequestForm, AddDatasetRequestForm
 
 
 def researcher_view(request):
-    errors = ''
+    debugdata = ''
+    errors = {'run': '', 'dataset': ''}
     client = app.views.get_client()
 
     namespace = client.get_user_namespace()
@@ -26,13 +27,14 @@ def researcher_view(request):
     my_requests = paginator.get_page(page_number)
 
     if request.method == 'POST':
-        if request.POST.get('form_id') == 'add_run_request':
-            errors = add_run_request(request)
-        elif request.POST.get('form_id') == 'add_dataset_request':
-            errors = add_dataset_request(request)
+        form_id = request.POST.get('form_id')
+        if form_id == 'add_run_request':
+            errors['run'] = add_run_request(request)
+        elif form_id == 'add_dataset_request':
+            errors['dataset'] = add_dataset_request(request)
 
     return render(request, 'researcher.html',
-                  {'pipelines': pipelines.pipelines, 'errors': errors, 'namespace': namespace,
+                  {'debugdata': debugdata, 'pipelines': pipelines.pipelines, 'errors': errors, 'namespace': namespace,
                    'datasets_available': datasets_available, 'datasets_requestable': datasets_requestable,
                    'my_requests': my_requests, 'pagination_range': range(1, my_requests.paginator.num_pages + 1)})
 
@@ -48,14 +50,8 @@ def add_run_request(request):
         run_request.save()
     else:
         errors = run_request_form.errors
-    return errors
 
-    return render(request, 'researcher.html',
-                  {'pipelines': pipelines.pipelines,
-                   'errors': errors,
-                   'namespace': namespace,
-                   'my_requests': my_requests,
-                   'pagination_range': range(1, my_requests.paginator.num_pages + 1)})
+    return errors
 
 def add_dataset_request(request):
     errors = ''
