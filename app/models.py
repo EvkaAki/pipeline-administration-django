@@ -12,6 +12,7 @@ class RunRequest(models.Model):
     user_email = models.EmailField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
+    pipeline_params = models.JSONField(null=True, blank=True)
 
     def __str__(self):
         return self.pipeline_id

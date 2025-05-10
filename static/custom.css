@@ -17,6 +17,28 @@
     gap: 8px
 }
 
-table strong {
-    font-weight: 700;
+strong {
+    font-weight: 700!important;
+}
+
+.row-flex {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    flex-direction: column;
+}
+
+.row-flex > .col-flex {
+    width: 66%;
+}
+
+.pipeline-parameters-wrapper {
+    border: 2px solid #e0e0e0;
+    padding: 20px;
+    width: 66%;
+    border-radius: 2px;
+}
+
+.pipeline-parameters-wrapper tr:last-child{
+   border: 0;
 }

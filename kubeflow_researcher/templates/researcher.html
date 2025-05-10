@@ -24,13 +24,13 @@
         </ul>
     </div>
     <div id="run_requests" class="col s12">
-        <div class="row">
-            <form method="POST" action="requests#run_requests">
+        <form method="POST" action="requests#run_requests">
+            <div class="row-flex">
                 {% csrf_token %}
                 <input type="hidden" name="form_id" value="add_run_request">
                 <input type="hidden" name="pipeline_name">
                 <input type="hidden" name="pipeline_version_name">
-                <div class="input-field col s8">
+                <div class="input-field col-flex">
                     <select id="pipelineSelect" name="pipeline_id">
                         <option value="" disabled selected>Choose your pipeline</option>
                         {% for pipeline in pipelines %}
@@ -40,14 +40,14 @@
                     <label for="pipelineSelect">Kubeflow Pipeline</label>
                     <span class="orange-text">{{ errors.run.pipeline_id }}</span>
                 </div>
-                <div class="input-field col s8">
+                <div class="input-field col-flex">
                     <select id="pipelineVersionSelect" name="pipeline_version_id">
                         <option value="" disabled selected>Choose pipeline version</option>
                     </select>
                     <label for="pipelineVersionSelect">Kubeflow Pipeline Version</label>
                     <span class="orange-text">{{ errors.run.pipeline_version_id }}</span>
                 </div>
-                <div class="input-field col s8">
+                <div class="input-field col-flex">
                     <span class="orange-text">{{ errors.run.dataset_id }}</span>
                     <select id="datasetSelect" name="dataset_id">
                         <option value="" disabled selected>Choose requested dataset</option>
@@ -58,16 +58,22 @@
                     <label for="datasetSelect">Requested dataset</label>
                     <span class="orange-text">{{ errors.run.pipeline_version_id }}</span>
                 </div>
-                <div class="input-field col s8">
-                    <textarea id="message" name="message" class="materialize-textarea"></textarea>
+                <div class="input-field col-flex">
+                    <textarea id="message" name="message" class="materialize-textarea" required></textarea>
                     <label for="message">Note</label>
                     <span class="orange-text">{{ errors.run.message }}</span>
                 </div>
-                <div class="input-field col s8">
-                    <button type="submit" class="waves-effect waves-light btn">Submit</button>
+                <div class="pipeline-parameters-wrapper">
+                    <strong>Pipeline parameters</strong>
+                    <div id="pipeline-parameters-form">
+                        <em>Please choose a pipeline and version first.</em>
+                    </div>
                 </div>
-            </form>
-        </div>
+                <div class="input-field col-flex">
+                    <button type="submit" class="waves-effect waves-light btn" id="submit_run_request">Submit</button>
+                </div>
+            </div>
+        </form>
     </div>
     <div id="db_requests" class="col s12">
         <div class="row">
@@ -172,6 +178,46 @@
 
 {% block scripts %}
 <script>
+    function handlePipelineVersionParams(response) {
+        const formContainer = $('#pipeline-parameters-form');
+        const submitBtn = $('#submit_run_request');
+
+        formContainer.empty();
+
+        let hasUrl = false;
+
+        response.forEach(param => {
+            if (param.name === 'url') {
+                hasUrl = true;
+                formContainer.append(`
+                <div class="input-field col s8">
+                    <p><strong>URL</strong>: (dataset url provided automatically)</p>
+                </div>
+            `);
+            } else {
+                formContainer.append(`
+                <div class="input-field col s8">
+                    <input type="text" name="pipeline_papams[${param.name}]" id="param-${param.name}" required />
+                    <label for="param-${param.name}">${param.name}</label>
+                </div>
+            `);
+            }
+        });
+
+        if (!hasUrl) {
+            formContainer.empty();
+            formContainer.append(`
+                <span class="orange-text">Parameter called 'url' is required for the pipeline.</span>
+            `);
+            submitBtn.prop('disabled', true);
+            return;
+        } else {
+            submitBtn.prop('disabled', false);
+        }
+
+    }
+
+
     $('#pipelineSelect').on('change', function () {
         let pipeline_id = this.value
         let pipelineVersionSelect = $('#pipelineVersionSelect');
@@ -205,6 +251,27 @@
             let value = $(query).text()
             $('input[name=pipeline_version_name]').val(value)
         }
+
+        let pipeline_id = $('#pipelineSelect').val();
+
+        $.ajax({
+            url: 'get-pipeline-version-params-ajax',
+            data: {pipeline_id: pipeline_id, version_id: pipeline_version_id},
+            dataType: "json",
+            success: function (response) {
+                console.log(response);
+                handlePipelineVersionParams(response);
+
+                // $.each(response, function (key, val) {
+                //     pipelineVersionSelect.append(new Option(val, key));
+                //
+                // });
+                //
+                // pipelineVersionSelect.change()
+                // pipelineVersionSelect.formSelect();
+            }
+        });
+
     });
 </script>
 

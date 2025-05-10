@@ -26,6 +26,10 @@ def get_pipeline_versions_by_id(request):
     kfp_client = get_client()
     return kfp_client.list_pipeline_versions(pipeline_id=request.GET.get('pipeline_id'))
 
+def get_pipeline_version(pipeline_id, version_id):
+    client = get_client()
+    version = client.get_pipeline_version(pipeline_id, version_id)
+    return version
 
 def get_token_from_request(request):
     return request.COOKIES.get('authservice_session')

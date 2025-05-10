@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect
 from app.forms import AddRunRequestForm
 from django.core.paginator import Paginator
 from app.forms import AddRunRequestForm, AddDatasetRequestForm
+import json
 
 
 def researcher_view(request):
@@ -47,6 +48,14 @@ def add_run_request(request):
         run_request = run_request_form.save(commit=False)
         run_request.user_email = user_data.get('user', 'anonymous@gmail.com')
         run_request.state = 0
+
+        pipeline_params = {}
+        for key in request.POST:
+            if key.startswith('pipeline_papams['):
+                param_name = key[len('pipeline_papams['):-1]
+                pipeline_params[param_name] = request.POST[key]
+        run_request.pipeline_params = pipeline_params
+
         run_request.save()
     else:
         errors = run_request_form.errors
@@ -76,3 +85,33 @@ def get_pipeline_versions_to_ajax(request):
 
     return JsonResponse(versions)
 
+def get_pipeline_version_params_ajax(request):
+    pipeline_id = request.GET.get('pipeline_id')
+    pipeline_version_id = request.GET.get('version_id')
+
+    if not pipeline_id or not pipeline_version_id:
+        return JsonResponse({'error': 'Pipeline ID and Version ID are required.'}, status=400)
+
+    pipeline_version = app.views.get_pipeline_version(pipeline_id, pipeline_version_id)
+
+    try:
+        param_defs = pipeline_version.pipeline_spec['root']['inputDefinitions']['parameters']
+
+    except KeyError:
+        return JsonResponse({'error': 'Missing input parameters in pipeline spec.'}, status=500)
+
+    parameters = [
+        {
+            "name": name,
+            "type": details.get("parameterType", "UNKNOWN")
+        }
+        for name, details in param_defs.items()
+    ]
+
+    return JsonResponse(parameters, safe=False)
+
+
+#     return JsonResponse({
+#         'pipeline_id': pipeline_id,
+#         'version_id': pipeline_version_id
+#     })

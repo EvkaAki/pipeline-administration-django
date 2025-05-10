@@ -58,11 +58,12 @@ def dataset_request_detail(request, request_id):
     return render(request, 'admin_dataset_request_detail.html',
                   {'dataset_request': dataset_request, 'messages': messages})
 
-
+from django.core import serializers
 def request_detail(request, request_id):
     kfp_client = app.views.get_client()
 
     run_request = RunRequest.objects.get(pk=request_id)
+    run_request_serialized = serializers.serialize('json', [run_request])
     namespace = kfp_client.get_user_namespace()
     pipeline = kfp_client.get_pipeline(str(run_request.pipeline_id))
     alert = ''
@@ -104,6 +105,7 @@ def request_detail(request, request_id):
                    'run_request': run_request,
                    'request_pagination_range': range(1, ),
                    'pipeline': pipeline,
+                   'debug': run_request_serialized,
 #                    'parameters': pipeline.parameters,
                    'parameters': [],
                    'alert': alert})
