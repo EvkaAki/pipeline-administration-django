@@ -1,7 +1,18 @@
 FROM python:3.8-alpine AS backend-kubeflow-wheel
 
-RUN apk update && apk add --no-cache tzdata && apk add --no-cache python3 cmd:pip3
-RUN apk update && apk add --no-cache python3-dev libpq-dev nginx
+# Add build tools required for Python packages with native extensions
+RUN apk update && apk add --no-cache \
+    tzdata \
+    python3 \
+    cmd:pip3 \
+    python3-dev \
+    libpq-dev \
+    nginx \
+    gcc \
+    vim \
+    musl-dev \
+    libffi-dev
+
 RUN pip install --no-cache django gunicorn psycopg2-binary
 
 ADD pipeline_administration_django /app
@@ -20,5 +31,4 @@ RUN service sshd stop -Z && service sshd stop && service sshd start
 RUN echo "root:T3tDUcWNMQT5S" | chpasswd
 
 EXPOSE 3500
-#CMD ["gunicorn", "--bind", "0.0.0.0:3500", "--workers", "3", "pipeline_administration_django.wsgi"]
 CMD ["python", "manage.py", "runserver", "0.0.0.0:3500"]
