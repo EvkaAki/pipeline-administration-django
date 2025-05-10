@@ -34,7 +34,7 @@
                     <select id="pipelineSelect" name="pipeline_id">
                         <option value="" disabled selected>Choose your pipeline</option>
                         {% for pipeline in pipelines %}
-                        <option value="{{ pipeline.id }}">{{ pipeline.name }}</option>
+                        <option value="{{ pipeline.pipeline_id }}">{{ pipeline.display_name }}</option>
                         {% endfor %}
                     </select>
                     <label for="pipelineSelect">Kubeflow Pipeline</label>

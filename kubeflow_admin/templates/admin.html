@@ -38,7 +38,7 @@
             {% for run_request in run_requests %}
             <tr>
                 <td>
-                    <a href="{{ '/_/pipeline/?ns=' }}{{ namespace }}{{ '#/pipelines/details/' }}{{ run_request.pipeline_id }}">
+                    <a href="{{ '/_/pipeline/?ns=' }}{{ namespace }}{{ '#/pipelines/details/' }}{{ run_request.pipeline_id }}" target="_blank">
                         {{ run_request.pipeline_name }}
                     </a>
                 </td>
@@ -46,7 +46,15 @@
                     {{ run_request.dataset_id }}
                 </td>
                 <td>{{ run_request.user_email }}</td>
-                <td>{{ run_request.state }}</td>
+                <td>
+                    {% if run_request.state == 0 %}
+                    <span data-badge-caption=" " class="badge white-text light-blue">New</span>
+                    {% elif run_request.state == 1 %}
+                    <span data-badge-caption=" " class="badge white-text orange">Denied</span>
+                    {% elif run_request.state == 2 %}
+                    <span data-badge-caption=" " class="badge white-text green">Approved</span>
+                    {% endif %}
+                </td>
                 <td>{{ run_request.created_at }}</td>
                 <td>
                     <a href="requests/{{ run_request.id }}" data-position="bottom"
@@ -77,10 +85,19 @@
             {% for dataset_request in dataset_requests %}
             <tr>
                 <td>
-                    {{ dataset_request.dataset_id }}
+                    <strong>{{ dataset_request.dataset_name }}</strong><br>
+                    <em>ID: {{ dataset_request.dataset_id }}</em>
                 </td>
                 <td>{{ dataset_request.user_email }}</td>
-                <td>{{ dataset_request.state }}</td>
+                <td>
+                    {% if dataset_request.state == 0 %}
+                    <span data-badge-caption=" " class="badge white-text light-blue">New</span>
+                    {% elif dataset_request.state == 1 %}
+                    <span data-badge-caption=" " class="badge white-text orange">Denied</span>
+                    {% elif dataset_request.state == 2 %}
+                    <span data-badge-caption=" " class="badge white-text green">Approved</span>
+                    {% endif %}
+                </td>
                 <td>{{ dataset_request.created_at }}</td>
                 <td>
                     <a href="dataset_requests/{{ dataset_request.id }}" data-position="bottom"

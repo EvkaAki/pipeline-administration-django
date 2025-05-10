@@ -12,16 +12,34 @@ def admin_view(request):
     namespace = kfp_client.get_user_namespace()
     if os.environ.get("DEV_MODE") == 'True':
         namespace = 'researcher-nedeliakova'
+
     run_requests = RunRequest.objects.all()
     dataset_requests = DatasetRequest.objects.all()
+
+    # Fetch datasets from the API based on dataset_id
+    token = app.views.get_token_from_request(request)
+    dataset_name_map = {}
+    if token:
+        for dr in dataset_requests:
+            dataset =  app.views.fetch_dataset_by_id(token, dr.dataset_id)
+            if dataset and 'name' in dataset:
+                dr.dataset_name = dataset['name']
+
+#         for dr in dataset_requests:
+#             dataset = app.views.fetch_dataset_by_id(token, dr.dataset_id)
+#             dataset_name_map[dr.dataset_id] = dataset['name']
 
     paginator = Paginator(run_requests, 5)
     page_number = request.GET.get("page")
     run_requests = paginator.get_page(page_number)
 
-    return render(request, 'admin.html',
-                  {'namespace': str(namespace), 'run_requests': run_requests, 'dataset_requests': dataset_requests,
-                   'request_pagination_range':  range(1, run_requests.paginator.num_pages + 1)})
+    return render(request, 'admin.html', {
+        'namespace': str(namespace),
+        'run_requests': run_requests,
+        'dataset_requests': dataset_requests,
+        'dataset_name_map': dataset_name_map,
+        'request_pagination_range': range(1, run_requests.paginator.num_pages + 1)
+    })
 
 
 def dataset_request_detail(request, request_id):
@@ -86,7 +104,8 @@ def request_detail(request, request_id):
                    'run_request': run_request,
                    'request_pagination_range': range(1, ),
                    'pipeline': pipeline,
-                   'parameters': pipeline.parameters,
+#                    'parameters': pipeline.parameters,
+                   'parameters': [],
                    'alert': alert})
 
 

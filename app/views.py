@@ -47,6 +47,18 @@ def get_kubeflow_user(request):
     return {}
 
 
+def fetch_dataset_by_id(token, dataset_id):
+    url = DATAPROVIDER_API_ENDPOINT + "/user/dataset/get"
+    headers = {'Content-Type': 'application/json'}
+    data = {'token': token, 'dataset_id': str(dataset_id)}
+    response = requests.get(url, headers=headers, data=json.dumps(data))
+
+    if response.status_code == 200:
+        dataset = response.json()
+        return dataset
+    else:
+        return None
+
 def fetch_available_datasets(token):
     # print(DATAPROVIDER_API_ENDPOINT)
     url = DATAPROVIDER_API_ENDPOINT + "/user/dataset/available"

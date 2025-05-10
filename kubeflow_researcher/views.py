@@ -71,7 +71,8 @@ def get_pipeline_versions_to_ajax(request):
     pipeline_versions = app.views.get_pipeline_versions_by_id(request)
 
     versions = {}
-    for version in pipeline_versions.versions:
-        versions[version.id] = version.name
+    for version in pipeline_versions.pipeline_versions:
+        versions[version.pipeline_version_id] = version.display_name
 
     return JsonResponse(versions)
+
