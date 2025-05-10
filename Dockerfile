@@ -1,4 +1,4 @@
-FROM python:3.7-alpine AS backend-kubeflow-wheel
+FROM python:3.8-alpine AS backend-kubeflow-wheel
 
 RUN apk update && apk add --no-cache tzdata && apk add --no-cache python3 cmd:pip3
 RUN apk update && apk add --no-cache python3-dev libpq-dev nginx
