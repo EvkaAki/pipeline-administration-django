@@ -9,3 +9,10 @@
 #run_requests, #db_requests, #data_samples, #my_requests {
     padding: 15px 30px;
 }
+
+.btn-details-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px
+}

@@ -115,8 +115,8 @@ USE_I18N = True
 USE_TZ = True
 
 
-credentials = kfp.auth.ServiceAccountTokenVolumeCredentials(path=None)
-client = kfp.Client(host=PIPELINE_URL, credentials=credentials)
+# credentials = kfp.auth.ServiceAccountTokenVolumeCredentials(path=None)
+client = kfp.Client(host=PIPELINE_URL)
 
 namespace = client.get_user_namespace()
 

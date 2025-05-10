@@ -9,9 +9,8 @@ from pipeline_administration_django.settings import DATAPROVIDER_API_ENDPOINT
 
 
 def get_client():
-    credentials = kfp.auth.ServiceAccountTokenVolumeCredentials()
-
-    return kfp.Client(host=os.environ.get("PIPELINE_URL"), credentials=credentials)
+#     credentials = kfp.auth.ServiceAccountTokenVolumeCredentials()
+    return kfp.Client(host=os.environ.get("PIPELINE_URL"))
 
 
 def get_view(request):
@@ -25,7 +24,6 @@ def get_view(request):
 
 def get_pipeline_versions_by_id(request):
     kfp_client = get_client()
-
     return kfp_client.list_pipeline_versions(pipeline_id=request.GET.get('pipeline_id'))
 
 
