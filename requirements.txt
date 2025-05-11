@@ -6,3 +6,4 @@ kfp==2.7.0
 urllib3<2.0
 kubernetes
 requests
+boto3

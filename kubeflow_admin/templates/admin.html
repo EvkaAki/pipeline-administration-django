@@ -26,24 +26,30 @@
         <table>
             <thead>
             <tr>
+                <th>ID</th>
                 <th>Pipeline</th>
                 <th>Dataset</th>
                 <th>Author</th>
                 <th>Status</th>
                 <th>Created At</th>
                 <th>Actions</th>
+                <th>Output Artefact</th>
             </tr>
             </thead>
             <tbody>
             {% for run_request in run_requests %}
             <tr>
                 <td>
+                    {{ run_request.id }}
+                </td>
+                <td>
                     <a href="{{ '/_/pipeline/?ns=' }}{{ namespace }}{{ '#/pipelines/details/' }}{{ run_request.pipeline_id }}" target="_blank">
                         {{ run_request.pipeline_name }}
                     </a>
                 </td>
                 <td>
-                    {{ run_request.dataset_id }}
+                    <strong> {{ run_request.dataset_name }} </strong><br>
+                    <em>ID: {{ run_request.dataset_id }} </em>
                 </td>
                 <td>{{ run_request.user_email }}</td>
                 <td>
@@ -52,7 +58,11 @@
                     {% elif run_request.state == 1 %}
                     <span data-badge-caption=" " class="badge white-text orange">Denied</span>
                     {% elif run_request.state == 2 %}
-                    <span data-badge-caption=" " class="badge white-text green">Approved</span>
+                    <span data-badge-caption=" " class="badge white-text amber">Running</span>
+                    {% elif run_request.state == 3 %}
+                    <span data-badge-caption=" " class="badge white-text green">Run Done</span>
+                    {% elif run_request.state == 4 %}
+                    <span data-badge-caption=" " class="badge white-text red">Run Error</span>
                     {% endif %}
                 </td>
                 <td>{{ run_request.created_at }}</td>
@@ -64,6 +74,18 @@
                             <span>Open Detail</span>
                         </div>
                     </a>
+                </td>
+                <td>
+                    {% if run_request.result %}
+                    <a href="download-artefact?run_request_id={{ run_request.id }}" data-position="bottom" class="tiny waves-effect waves-light btn-small">
+                        <div class="btn-details-inner">
+                            <i class="material-icons">download</i>
+                            <span>Download</span>
+                        </div>
+                    </a>
+                    {% else %}
+                    <em class="blue-grey-text">No output yet</em>
+                    {% endif %}
                 </td>
             </tr>
             {% endfor %}

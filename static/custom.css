@@ -42,3 +42,10 @@ strong {
 .pipeline-parameters-wrapper tr:last-child{
    border: 0;
 }
+
+.badge {
+    border-radius: 4px!important;
+    text-transform: uppercase;
+    font-size: 12px!important;
+    font-weight: bold;
+}

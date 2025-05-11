@@ -1,11 +1,16 @@
 from django.shortcuts import render
+from django.core import serializers
+from django.http import StreamingHttpResponse
 
 import app.views
+import hashlib
 from app.models import RunRequest, DatasetRequest
 import os
 from django.core.paginator import Paginator
 from django.utils import timezone
-
+import time
+import json
+from kfp import Client
 
 def admin_view(request):
     kfp_client = app.views.get_client()
@@ -18,12 +23,23 @@ def admin_view(request):
 
     # Fetch datasets from the API based on dataset_id
     token = app.views.get_token_from_request(request)
-    dataset_name_map = {}
     if token:
+        dataset_cache = {}
+
         for dr in dataset_requests:
-            dataset =  app.views.fetch_dataset_by_id(token, dr.dataset_id)
+            if dr.dataset_id not in dataset_cache:
+                dataset_cache[dr.dataset_id] = app.views.fetch_dataset_by_id(token, dr.dataset_id)
+            dataset = dataset_cache[dr.dataset_id]
             if dataset and 'name' in dataset:
                 dr.dataset_name = dataset['name']
+
+        for rr in run_requests:
+            if rr.dataset_id not in dataset_cache:
+                dataset_cache[rr.dataset_id] = app.views.fetch_dataset_by_id(token, rr.dataset_id)
+            dataset = dataset_cache[rr.dataset_id]
+            if dataset and 'name' in dataset:
+                rr.dataset_name = dataset['name']
+
 
 #         for dr in dataset_requests:
 #             dataset = app.views.fetch_dataset_by_id(token, dr.dataset_id)
@@ -37,7 +53,6 @@ def admin_view(request):
         'namespace': str(namespace),
         'run_requests': run_requests,
         'dataset_requests': dataset_requests,
-        'dataset_name_map': dataset_name_map,
         'request_pagination_range': range(1, run_requests.paginator.num_pages + 1)
     })
 
@@ -45,6 +60,9 @@ def admin_view(request):
 def dataset_request_detail(request, request_id):
     messages = {'message': ''}
     dataset_request = DatasetRequest.objects.get(pk=request_id)
+    kfp_client = app.views.get_admin_client()
+    namespace = kfp_client.get_user_namespace()
+
     if request.method == 'POST':
         decision = request.POST.get('decision')
         if decision == "2":
@@ -56,20 +74,29 @@ def dataset_request_detail(request, request_id):
         dataset_request.save()
 
     return render(request, 'admin_dataset_request_detail.html',
-                  {'dataset_request': dataset_request, 'messages': messages})
+                  {'dataset_request': dataset_request, 'messages': messages, 'namespace': namespace})
 
-from django.core import serializers
+
 def request_detail(request, request_id):
-    kfp_client = app.views.get_client()
+    token = app.views.get_token_from_request(request)
+#     def line_generator():
+#         for line in app.views.stream_full_dataset(token, 'fcfda582-9ed5-44db-aec1-cb37e99ce368'):
+#             yield line + '\n'
+#
+#     return StreamingHttpResponse(line_generator(), content_type='text/csv')
 
+    kfp_client = app.views.get_admin_client()
     run_request = RunRequest.objects.get(pk=request_id)
     run_request_serialized = serializers.serialize('json', [run_request])
     namespace = kfp_client.get_user_namespace()
     pipeline = kfp_client.get_pipeline(str(run_request.pipeline_id))
-    alert = ''
+    alert = {'status': 'success', 'message': ''}
+    debug = ''
     parameters_dict = {}
 
-    experiment_name = namespace + '_' + str(hash(run_request.user_email))
+    experiment_name = namespace + '_' + str(hashlib.md5(run_request.user_email.encode('utf-8')).hexdigest())
+#     debug = 'experiment_name: ' + experiment_name
+#     experiment_name = 'admin_7542896038893142685'
 
     if request.method == 'POST':
         try:
@@ -78,38 +105,95 @@ def request_detail(request, request_id):
             experiment = kfp_client.create_experiment(
                 name=experiment_name,
                 namespace=namespace,
-                description="Experiment for user run_request.user_email"
+                description=f"Experiment for user {run_request.user_email}"
             )
-        parameters = request.POST.getlist('parameters[]')
 
-        for parameter, key in parameters:
-            parameters_dict[key] = parameter
-            # TODO get the custom parameters from the request and put it int he params
+        new_pipeline = clone_pipeline_to_admin(run_request.pipeline_id, run_request.pipeline_version_id, run_request.id)
+        pipeline_version = app.views.get_first_pipeline_version(pipeline.pipeline_id)
+
+        parameters = dict(run_request.pipeline_params)
+        parameters['url'] = app.views.get_stream_full_dataset_url(token, run_request.dataset_id)
+        param_defs = pipeline_version.pipeline_spec['root']['inputDefinitions']['parameters']
+        parameters = prepare_pipeline_params(parameters, param_defs)
 
         run = kfp_client.run_pipeline(
             job_name="Run_for_user_" + run_request.user_email + "_" + str(timezone.now()),
-            experiment_id=experiment.id,
-            pipeline_id=pipeline.id,
-            version_id=run_request.pipeline_version_id,
-            params=parameters_dict
+            experiment_id=experiment.experiment_id,
+            pipeline_id=pipeline.pipeline_id,
+            version_id=pipeline_version.pipeline_version_id,
+            params=parameters
         )
         if run is not None:
             run_request.state = 2
+            run_request.run_id = run.run_id
             run_request.save()
-            alert = 'real happines'
+            alert.message = 'Run request approved and pipeline started successfully'
+            alert.status = 'succcess'
         else:
-            alert = 'saddness'
+            alert.message = 'Failed to start pipeline run'
 
     return render(request, 'admin_request_detail.html',
                   {'namespace': namespace,
                    'run_request': run_request,
                    'request_pagination_range': range(1, ),
                    'pipeline': pipeline,
-                   'debug': run_request_serialized,
-#                    'parameters': pipeline.parameters,
+                   'debug': debug,
                    'parameters': [],
                    'alert': alert})
 
+
+def prepare_pipeline_params(parameters, param_defs):
+    converted = {}
+    for name, value in parameters.items():
+        param_type = param_defs.get(name, {}).get('parameterType', 'STRING')
+
+        try:
+            if param_type == 'NUMBER_INTEGER':
+                converted[name] = int(value)
+            elif param_type == 'NUMBER_DOUBLE':
+                converted[name] = float(value)
+            elif param_type == 'BOOLEAN':
+                if isinstance(value, bool):
+                    converted[name] = value
+                elif str(value).lower() in ['true', '1', 'yes']:
+                    converted[name] = True
+                elif str(value).lower() in ['false', '0', 'no']:
+                    converted[name] = False
+                else:
+                    raise ValueError(f"Invalid boolean: {value}")
+            else:
+                converted[name] = str(value)
+        except (ValueError, TypeError) as e:
+            raise ValueError(f"Invalid value for parameter '{name}' of type '{param_type}': {value}") from e
+
+    return converted
+
+
+def clone_pipeline_to_admin(pipeline_id, version_id, run_request_id):
+    pipeline_id = str(pipeline_id)
+    version_id = str(version_id)
+    target_namespace = "admin"
+    timestamp = time.strftime("%Y%m%d%H%M%S")
+    package_file = f"copied_pipeline_{timestamp}.json"
+
+    client = app.views.get_client()
+    version = client.get_pipeline_version(pipeline_id, version_id)
+    spec = version.pipeline_spec
+    new_name = f"{version.display_name} - Run Request {run_request_id} - {timestamp}"
+
+    with open(package_file, "w") as f:
+        json.dump(spec, f)
+
+    admin_client = app.views.get_admin_client()
+    new_pipeline = admin_client.upload_pipeline(
+        pipeline_package_path=package_file,
+        pipeline_name=new_name,
+        description=f"Copied from version {version_id}",
+        namespace=target_namespace
+    )
+
+    os.remove(package_file)
+    return new_pipeline
 
 def approve_run_request(request_id):
     run_request = request_id

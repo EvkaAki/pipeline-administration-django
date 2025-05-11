@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse, Http404
 from app.models import RunRequest
 import app.views
 from django.shortcuts import render, redirect
@@ -6,11 +6,13 @@ from app.forms import AddRunRequestForm
 from django.core.paginator import Paginator
 from app.forms import AddRunRequestForm, AddDatasetRequestForm
 import json
+import os
 
 
 def researcher_view(request):
     debugdata = ''
     errors = {'run': '', 'dataset': ''}
+    success_messages = {'run': '', 'dataset': ''}
     client = app.views.get_client()
 
     namespace = client.get_user_namespace()
@@ -23,22 +25,40 @@ def researcher_view(request):
     user_email_json = app.views.get_kubeflow_user(request)
     user_email = user_email_json.get('user', 'anonymous@gmail.com')
     my_requests = RunRequest.objects.filter(user_email=user_email).order_by('-updated_at')
-    paginator = Paginator(my_requests, 5)
+    paginator = Paginator(my_requests, 20)
     page_number = request.GET.get("page")
     my_requests = paginator.get_page(page_number)
+    dataset_cache = {}
+    token = app.views.get_token_from_request(request)
+
+    for rr in my_requests:
+        if rr.dataset_id not in dataset_cache:
+            dataset_cache[rr.dataset_id] = app.views.fetch_dataset_by_id(token, rr.dataset_id)
+            dataset = dataset_cache[rr.dataset_id]
+        if dataset and 'name' in dataset:
+            rr.dataset_name = dataset['name']
 
     if request.method == 'POST':
         form_id = request.POST.get('form_id')
         if form_id == 'add_run_request':
             errors['run'] = add_run_request(request)
+            if not errors['run']:
+                success_messages['run'] = 'Run request was created successfully and is waiting for confirmation.'
         elif form_id == 'add_dataset_request':
             errors['dataset'] = add_dataset_request(request)
+            if not errors['dataset']:
+                success_messages['dataset'] = 'Dataset access request was created successfully and is waiting for confirmation.'
 
     return render(request, 'researcher.html',
                   {'debugdata': debugdata, 'pipelines': pipelines.pipelines, 'errors': errors, 'namespace': namespace,
-                   'datasets_available': datasets_available, 'datasets_requestable': datasets_requestable,
+                   'datasets_available': datasets_available, 'datasets_requestable': datasets_requestable, 'success_messages': success_messages,
                    'my_requests': my_requests, 'pagination_range': range(1, my_requests.paginator.num_pages + 1)})
 
+def download_signing_key(request):
+    path = '/etc/keys/public/public.pem'
+    if not os.path.exists(path):
+        raise Http404("Signing key not found.")
+    return FileResponse(open(path, 'rb'), as_attachment=True, filename='public.pem')
 
 def add_run_request(request):
     errors = ''

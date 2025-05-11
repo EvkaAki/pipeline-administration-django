@@ -24,6 +24,12 @@
         </ul>
     </div>
     <div id="run_requests" class="col s12">
+        {% if success_messages.run %}
+        <div class="card-panel green lighten-3 green-text text-darken-3">
+            <strong>{{ success_messages.run }}</strong>
+        </div>
+        {% endif %}
+
         <form method="POST" action="requests#run_requests">
             <div class="row-flex">
                 {% csrf_token %}
@@ -48,7 +54,6 @@
                     <span class="orange-text">{{ errors.run.pipeline_version_id }}</span>
                 </div>
                 <div class="input-field col-flex">
-                    <span class="orange-text">{{ errors.run.dataset_id }}</span>
                     <select id="datasetSelect" name="dataset_id">
                         <option value="" disabled selected>Choose requested dataset</option>
                         {% for dataset in datasets_available %}
@@ -56,7 +61,7 @@
                         {% endfor %}
                     </select>
                     <label for="datasetSelect">Requested dataset</label>
-                    <span class="orange-text">{{ errors.run.pipeline_version_id }}</span>
+                    <span class="orange-text">{{ errors.run.dataset_id }}</span>
                 </div>
                 <div class="input-field col-flex">
                     <textarea id="message" name="message" class="materialize-textarea" required></textarea>
@@ -76,6 +81,12 @@
         </form>
     </div>
     <div id="db_requests" class="col s12">
+        {% if success_messages.dataset %}
+        <div class="card-panel green lighten-3 green-text text-darken-3">
+            <strong>{{ success_messages.dataset }}</strong>
+        </div>
+        {% endif %}
+
         <div class="row">
             <form method="POST" action="requests#db_requests">
                 {% csrf_token %}
@@ -103,6 +114,14 @@
     </div>
     <div id="my_requests" class="col s12">
         <div class="row">
+            <a href="download-signing-key" data-position="bottom" class="tiny waves-effect waves-light btn-small">
+                <div class="btn-details-inner">
+                    <i class="material-icons">download</i>
+                    <span>Download model signing public key</span>
+                </div>
+            </a>
+        </div>
+        <div class="row">
             <table>
                 <thead>
                 <tr>
@@ -111,15 +130,18 @@
                     <th>Pipeline version</th>
                     <th>Created At</th>
                     <th>Updated At</th>
-                    <th>State At</th>
-                    <th>Artefact url</th>
+                    <th>State</th>
+                    <th>Output Artefact</th>
                 </tr>
                 </thead>
 
                 <tbody>
                 {% for my_request in my_requests %}
                 <tr>
-                    <td>{{ my_request.dataset_id }}</td>
+                    <td>
+                        <strong>{{ my_request.dataset_name }}</strong><br>
+                        <em>ID: {{ my_request.dataset_id }}</em>
+                    </td>
                     <td>{{ my_request.pipeline_name }}</td>
                     <td>{{ my_request.pipeline_version_name }}</td>
                     <td>{{ my_request.created_at }}</td>
@@ -130,13 +152,25 @@
                         {% elif my_request.state == 1 %}
                         <span data-badge-caption=" " class="badge white-text orange">Denied</span>
                         {% elif my_request.state == 2 %}
-                        <span data-badge-caption=" "
-                              class="badge white-text green">Approved - processing</span>
+                        <span data-badge-caption=" " class="badge white-text amber">Running</span>
                         {% elif my_request.state == 3 %}
-                        <span data-badge-caption=" " class="badge white-text teal">Completed</span>
+                        <span data-badge-caption=" " class="badge white-text green">Run Done</span>
+                        {% elif my_request.state == 4 %}
+                        <span data-badge-caption=" " class="badge white-text red">Run Error</span>
                         {% endif %}
                     </td>
-                    <td>http://test</td>
+                    <td>
+                        {% if my_request.result %}
+                        <a href="download-artefact?run_request_id={{ my_request.id }}" data-position="bottom" class="tiny waves-effect waves-light btn-small">
+                            <div class="btn-details-inner">
+                                <i class="material-icons">download</i>
+                                <span>Download</span>
+                            </div>
+                        </a>
+                        {% else %}
+                        <em class="blue-grey-text">No output yet</em>
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
                 </tbody>
@@ -149,7 +183,6 @@
                         {% endif %}
                         "><a href="?page={{ index }}#my_requests">{{ index }}</a></li>
                 {% endfor %}
-
             </ul>
         </div>
     </div>
