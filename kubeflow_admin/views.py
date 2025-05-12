@@ -18,8 +18,8 @@ def admin_view(request):
     if os.environ.get("DEV_MODE") == 'True':
         namespace = 'researcher-nedeliakova'
 
-    run_requests = RunRequest.objects.all()
-    dataset_requests = DatasetRequest.objects.all()
+    run_requests = RunRequest.objects.all().order_by('-id')
+    dataset_requests = DatasetRequest.objects.all().order_by('-id')
 
     # Fetch datasets from the API based on dataset_id
     token = app.views.get_token_from_request(request)
@@ -45,7 +45,7 @@ def admin_view(request):
 #             dataset = app.views.fetch_dataset_by_id(token, dr.dataset_id)
 #             dataset_name_map[dr.dataset_id] = dataset['name']
 
-    paginator = Paginator(run_requests, 5)
+    paginator = Paginator(run_requests, 10)
     page_number = request.GET.get("page")
     run_requests = paginator.get_page(page_number)
 
@@ -99,6 +99,21 @@ def request_detail(request, request_id):
 #     experiment_name = 'admin_7542896038893142685'
 
     if request.method == 'POST':
+        decision = request.POST.get('decision')
+        if decision == "deny":
+            run_request.state = 1
+            run_request.save()
+            alert['message'] = 'Run request rejected'
+            alert['status'] = 'success'
+            return render(request, 'admin_request_detail.html',
+                          {'namespace': namespace,
+                           'run_request': run_request,
+                           'request_pagination_range': range(1, ),
+                           'pipeline': pipeline,
+                           'debug': debug,
+                           'parameters': [],
+                           'alert': alert})
+
         try:
             experiment = kfp_client.get_experiment(experiment_name=experiment_name)
         except ValueError:
@@ -127,9 +142,10 @@ def request_detail(request, request_id):
             run_request.state = 2
             run_request.run_id = run.run_id
             run_request.save()
-            alert.message = 'Run request approved and pipeline started successfully'
-            alert.status = 'succcess'
+            alert['message'] = 'Run request approved and pipeline started successfully'
+            alert['status'] = 'success'
         else:
+            alert['status'] = 'error'
             alert.message = 'Failed to start pipeline run'
 
     return render(request, 'admin_request_detail.html',

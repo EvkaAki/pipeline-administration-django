@@ -21,11 +21,11 @@
         {% if alert.message %}
         {% if alert.status == 'error' %}
         <div class="card-panel red lighten-3 red-text text-darken-4">
-            {{ alert.message }}
+            <strong>{{ alert.message }}</strong>
         </div>
         {% elif alert.status == 'success' %}
         <div class="card-panel green lighten-3 green-text text-darken-3">
-            {{ alert.message }}
+            <strong>{{ alert.message }}</strong>
         </div>
         {% endif %}
         {% endif %}
@@ -88,6 +88,7 @@
             <div class="col s12">
                 <form method="POST" id="CreateRunFromRunRequest">
                     {% csrf_token %}
+                    <input type="hidden" name="decision" value="allow">
                     <div class="input-field">
                         <textarea id="message" name="message" class="materialize-textarea"></textarea>
                         <label for="message">Note</label>
@@ -101,6 +102,11 @@
                     </div>
                     {% endfor %}
                 </form>
+
+                <form method="POST" id="DenyRunRequest">
+                    {% csrf_token %}
+                    <input type="hidden" name="decision" value="deny">
+                </form>
             </div>
 
         </div>
@@ -113,10 +119,12 @@
                         class="green waves-effect waves-light btn-small">
                     <i class="material-icons left">directions_run</i> Approve and create Run
                 </button>
-                <a href="requests/{{ run_request.id }}"
-                   class="red waves-effect waves-light btn-small">
+
+                <button form="DenyRunRequest"
+                        type="submit"
+                        class="red waves-effect waves-light btn-small">
                     <i class="material-icons left">do_not_disturb</i> Deny
-                </a>
+                </button>
                 {% endif %}
             </div>
         </div>

@@ -13,32 +13,33 @@ from pipeline_administration_django.settings import DATAPROVIDER_API_ENDPOINT
 
 
 
+from django.http import Http404, StreamingHttpResponse
+
 def download_artefact_view(request):
-    try:
-        run_request_id = request.GET.get('run_request_id')
-        if not run_request_id:
-            raise Http404("Run ID not provided")
+    run_request_id = request.GET.get('run_request_id')
+    if not run_request_id:
+        raise Http404("Run ID not provided")
 
-        run_request = RunRequest.objects.get(pk=run_request_id)
-        if not run_request or not run_request.result:
-            raise Http404("Run request not found")
+    run_request = RunRequest.objects.filter(pk=run_request_id).first()
+    if not run_request or not run_request.result:
+        raise Http404("Run request not found")
 
-        user_email_json = get_kubeflow_user(request)
-        user_email = user_email_json.get('user', 'anonymous@gmail.com')
+    user_email_json = get_kubeflow_user(request)
+    user_email = user_email_json.get('user', 'anonymous@gmail.com')
 
-        if run_request.user_email != user_email and user_email != 'admin':
-            raise Http404("You do not have permission to access this artefact")
+    if run_request.user_email != user_email and user_email != 'admin':
+        raise Http404("You do not have permission to access this artefact")
 
-#         body = user_email
-#         response = StreamingHttpResponse(body, content_type='text/plain')
-#         response['Content-Disposition'] = f'attachment; filename="result.txt"'
+#     body = f"{run_request.result} \n {run_request.run_id}"
+#     response = StreamingHttpResponse(body, content_type='text/plain')
+#     response['Content-Disposition'] = f'attachment; filename="result.txt"'
+#     return response
+#
+    body = stream_output_artefact(run_request)
+    response = StreamingHttpResponse(body, content_type='application/zip')
+    response['Content-Disposition'] = f'attachment; filename="output_artefact_{run_request_id}.signed.zip"'
+    return response
 
-        body = stream_output_artefact(run_request)
-        response = StreamingHttpResponse(body, content_type='application/zip')
-        response['Content-Disposition'] = f'attachment; filename="output_artefact_{run_request_id}.signed.zip"'
-        return response
-    except Exception as e:
-        raise Http404(f"Artifact not found: {e}")
 
 def get_client():
 #     credentials = kfp.auth.ServiceAccountTokenVolumeCredentials()
@@ -156,7 +157,9 @@ def get_stream_full_dataset_url(token, dataset_id):
     return f"{base_url}?{query}"
 
 def stream_output_artefact(run_request):
-    run_id = run_request.run_id
+    if not run_request.result or run_request.result == 'None':
+        raise ValueError("Run request does not have a result")
+
     s3 = boto3.client(
         's3',
         endpoint_url='http://minio-service.kubeflow.svc.cluster.local:9000',

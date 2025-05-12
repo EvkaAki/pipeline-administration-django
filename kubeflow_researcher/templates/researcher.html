@@ -160,6 +160,9 @@
                         {% endif %}
                     </td>
                     <td>
+                        {% if my_request.result == 'None'%}
+                        <em class="red-text">Output artefact does not exist</em>
+                        {% else %}
                         {% if my_request.result %}
                         <a href="download-artefact?run_request_id={{ my_request.id }}" data-position="bottom" class="tiny waves-effect waves-light btn-small">
                             <div class="btn-details-inner">
@@ -169,6 +172,7 @@
                         </a>
                         {% else %}
                         <em class="blue-grey-text">No output yet</em>
+                        {% endif %}
                         {% endif %}
                     </td>
                 </tr>
