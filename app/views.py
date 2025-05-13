@@ -54,8 +54,8 @@ def download_dataset_sample(request):
         raise Http404("Dataset not found")
 
     body = stream_sample_dataset(token, dataset_id)
-    response = StreamingHttpResponse(body, content_type='application/zip')
-    response['Content-Disposition'] = f'attachment; filename="{dataset["identifier"]}_anonymized.zip"'
+    response = StreamingHttpResponse(body, content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="{dataset["identifier"]}_anonymized.csv"'
     return response
 
 
