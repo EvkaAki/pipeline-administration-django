@@ -40,6 +40,24 @@ def download_artefact_view(request):
     response['Content-Disposition'] = f'attachment; filename="output_artefact_{run_request_id}.signed.zip"'
     return response
 
+def download_dataset_sample(request):
+    dataset_id = request.GET.get('dataset_id')
+    if not dataset_id:
+        raise Http404("Dataset ID not provided")
+
+    token = get_token_from_request(request)
+    if not token:
+        raise Http404("Token not found")
+
+    dataset = fetch_dataset_by_id(token, dataset_id)
+    if not dataset or 'name' not in dataset:
+        raise Http404("Dataset not found")
+
+    body = stream_sample_dataset(token, dataset_id)
+    response = StreamingHttpResponse(body, content_type='application/zip')
+    response['Content-Disposition'] = f'attachment; filename="{dataset["identifier"]}_anonymized.zip"'
+    return response
+
 
 def get_client():
 #     credentials = kfp.auth.ServiceAccountTokenVolumeCredentials()
@@ -139,6 +157,17 @@ def fetch_requestable_datasets(token):
 
 def stream_full_dataset(token, dataset_id):
     url = f"{DATAPROVIDER_API_ENDPOINT}/stream/full"
+    params = {
+        "dataset_id": dataset_id,
+        "token": token
+    }
+    response = requests.get(url, params=params, stream=True)
+    if response.status_code != 200:
+        raise Exception(f"Failed to stream dataset: {response.status_code} {response.text}")
+    return response.iter_lines(decode_unicode=True)
+
+def stream_sample_dataset(token, dataset_id):
+    url = f"{DATAPROVIDER_API_ENDPOINT}/stream/anonymized"
     params = {
         "dataset_id": dataset_id,
         "token": token
